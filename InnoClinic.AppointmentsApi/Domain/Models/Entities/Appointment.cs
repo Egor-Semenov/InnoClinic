@@ -1,0 +1,21 @@
+﻿
+namespace Domain.Models.Entities
+{
+    public sealed class Appointment
+    {
+        public int Id { get; set; }
+        public int DoctorId { get; set; }
+        public int PatientId {  get; set; }
+        public int SpecializationId { get; set; }
+        public int ServiceId { get; set; }
+        public int Office { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime Time { get; set; }
+        public string Description { get; set; }
+        public int StatusId { get; set; }
+
+        public AppointmentStatus Status { get; set; }
+        public Specialization Specialization { get; set; }
+        public Service Service { get; set; }
+    }
+}
