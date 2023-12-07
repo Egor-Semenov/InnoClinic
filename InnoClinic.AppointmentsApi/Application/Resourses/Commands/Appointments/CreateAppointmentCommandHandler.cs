@@ -16,7 +16,7 @@ namespace Application.Resourses.Commands.Appointments
 
         public async Task<Appointment> Handle(CreateAppointmentCommand request, CancellationToken cancellationToken)
         {
-            var appointment = new Appointment()
+            var appointment = new Appointment
             {
                 PatientId = request.PatientId,
                 DoctorId = request.DoctorId,

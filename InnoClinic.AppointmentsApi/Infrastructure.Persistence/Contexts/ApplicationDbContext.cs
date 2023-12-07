@@ -17,9 +17,37 @@ namespace Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<Service>()
                 .HasKey(x => new { x.ServiceId });
+            
+            modelBuilder.Entity<ServiceStatus>()
+                .HasKey(x => new { x.StatusId });
+
+            modelBuilder.Entity<ServiceCategory>()
+               .HasKey(x => new { x.CategoryId });
+
+            modelBuilder.Entity<DoctorStatus>()
+                .HasKey(x => new { x.StatusId });
+
+            modelBuilder.Entity<SpecializationStatus>()
+                .HasKey(x => new { x.StatusId });
+
+            modelBuilder.Entity<Doctor>()
+                .HasMany(x => x.Appointments)
+                .WithOne(x => x.Doctor)
+                .HasForeignKey(x => x.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Patient>()
+                .HasMany(x => x.Appointments)
+                .WithOne(x => x.Patient)
+                .HasForeignKey(x => x.PatientId);
 
             modelBuilder.Entity<Specialization>()
                 .HasMany(x => x.Appointments)
+                .WithOne(x => x.Specialization)
+                .HasForeignKey(x => x.SpecializationId);
+
+            modelBuilder.Entity<Specialization>()
+                .HasMany(x => x.Doctors)
                 .WithOne(x => x.Specialization)
                 .HasForeignKey(x => x.SpecializationId);
 
@@ -33,32 +61,142 @@ namespace Infrastructure.Persistence.Contexts
                 .WithOne(x => x.Status)
                 .HasForeignKey(x => x.StatusId);
 
-            modelBuilder.Entity<Specialization>()
-                .HasData(new Specialization
-                {
-                    SpecializationId = 1,
-                    SpecializationName = "Pediatrics"
-                });
+            modelBuilder.Entity<SpecializationStatus>()
+                .HasMany(x => x.Specializations)
+                .WithOne(x => x.Status)
+                .HasForeignKey(x => x.StatusId);
 
-            modelBuilder.Entity<Service>()
-                .HasData(new Service
-                {
-                    ServiceId = 101,
-                    ServiceName = "PediatricCheckup",
-                    ServiceCost = 100
-                });
+            modelBuilder.Entity<ServiceStatus>()
+                .HasMany(x => x.Services)
+                .WithOne(x => x.Status)
+                .HasForeignKey(x => x.StatusId);
+
+            modelBuilder.Entity<DoctorStatus>()
+                .HasMany(x => x.Doctors)
+                .WithOne(x => x.Status)
+                .HasForeignKey(x => x.StatusId);
+
+            modelBuilder.Entity<ServiceCategory>()
+                .HasMany(x => x.Services)
+                .WithOne(x => x.ServiceCategory)
+                .HasForeignKey(x => x.ServiceCategoryId);
 
             modelBuilder.Entity<AppointmentStatus>()
-                .HasData(new AppointmentStatus
+                .HasData(new[]
                 {
-                    StatusId = 3,
-                    Status = "Pending"
+                    new AppointmentStatus
+                    {
+                        StatusId = 1,
+                        Status = "Approved"
+                    },
+                    new AppointmentStatus
+                    {
+                        StatusId = 2,
+                        Status = "Pending"
+                    }
+                });
+
+            modelBuilder.Entity<DoctorStatus>()
+                .HasData(new[]
+                {
+                    new DoctorStatus
+                    {
+                        StatusId = 1,
+                        Status = "At work"
+                    },
+                    new DoctorStatus
+                    {
+                        StatusId = 2,
+                        Status = "On vacation"
+                    },
+                    new DoctorStatus
+                    {
+                        StatusId = 3,
+                        Status = "Sick Day"
+                    },
+                    new DoctorStatus
+                    {
+                        StatusId = 4,
+                        Status = "Sick Leave"
+                    },
+                    new DoctorStatus
+                    {
+                        StatusId = 5,
+                        Status = "Self-isolation"
+                    },
+                    new DoctorStatus
+                    {
+                        StatusId = 6,
+                        Status = "Leave without pay"
+                    },
+                    new DoctorStatus
+                    {
+                        StatusId = 7,
+                        Status = "Inactive"
+                    },
+                });
+
+            modelBuilder.Entity<SpecializationStatus>()
+                .HasData(new[]
+                {
+                    new SpecializationStatus
+                    {
+                        StatusId = 1,
+                        Status = "Active"
+                    },
+                    new SpecializationStatus
+                    {
+                        StatusId = 2,
+                        Status = "Inactive"
+                    }
+                });
+
+            modelBuilder.Entity<ServiceStatus>()
+                .HasData(new[]
+                {
+                    new ServiceStatus
+                    {
+                        StatusId = 1,
+                        Status = "Active"
+                    },
+                    new ServiceStatus
+                    {
+                        StatusId = 2,
+                        Status = "Inactive"
+                    }
+                });
+
+            modelBuilder.Entity<ServiceCategory>()
+                .HasData(new[]
+                {
+                    new ServiceCategory
+                    {
+                        CategoryId = 1,
+                        CategoryName = "Analyses"
+                    },
+                    new ServiceCategory
+                    {
+                        CategoryId = 2,
+                        CategoryName = "Consultation"
+                    },
+                    new ServiceCategory
+                    {
+                        CategoryId = 3,
+                        CategoryName = "Diagnostics"
+                    }
                 });
         }
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<AppointmentStatus> AppointmentStatuses { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
+        public DbSet<SpecializationStatus> SpecializationStatuses { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories { get; set; }
+        public DbSet<ServiceStatus> ServiceStatuses { get; set; }
+        public DbSet<Receptionist> Receptionists { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<DoctorStatus> DoctorStatuses { get; set; }
+        public DbSet<Patient> Patients { get; set; }
     }
 }

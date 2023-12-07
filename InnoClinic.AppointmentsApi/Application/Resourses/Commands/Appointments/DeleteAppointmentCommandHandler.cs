@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Repositories;
+﻿using Domain.Exceptions;
+using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,10 @@ namespace Application.Resourses.Commands.Appointments
         {
             var appointment = await _appointmentsRepository.FindByCondition(x => x.Id == request.Id, false).FirstOrDefaultAsync();
 
-            if (appointment is null) { }
+            if (appointment is null)
+            {
+                throw new NotFoundException($"Appointment with id: {request.Id} is not found.");
+            }
 
             await _appointmentsRepository.Delete(appointment!);
             return appointment!;
