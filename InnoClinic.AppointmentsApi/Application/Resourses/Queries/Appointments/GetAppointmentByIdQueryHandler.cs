@@ -1,6 +1,5 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
-using Infrastructure.Persistence.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

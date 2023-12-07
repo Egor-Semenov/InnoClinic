@@ -16,6 +16,11 @@ namespace InnoClinic.AppointmentsApi.Extentions
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddScoped<IBaseRepository<Appointment>, AppointmentsRepository>();
+            services.AddScoped<IBaseRepository<Doctor>, DoctorsRepository>();
+            services.AddScoped<IBaseRepository<Patient>, PatientsRepository>();
+            services.AddScoped<IBaseRepository<Receptionist>, ReceptionistRepository>();
+            services.AddScoped<IBaseRepository<Service>, ServicesRepository>();
+            services.AddScoped<IBaseRepository<Specialization>, SpecializationsRepository>();
         }
     }
 }

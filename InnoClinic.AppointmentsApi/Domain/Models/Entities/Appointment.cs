@@ -14,6 +14,8 @@ namespace Domain.Models.Entities
         public string Description { get; set; }
         public int StatusId { get; set; }
 
+        public Doctor Doctor { get; set; }
+        public Patient Patient { get; set; }
         public AppointmentStatus Status { get; set; }
         public Specialization Specialization { get; set; }
         public Service Service { get; set; }
