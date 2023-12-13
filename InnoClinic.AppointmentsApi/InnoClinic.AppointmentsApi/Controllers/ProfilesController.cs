@@ -1,6 +1,12 @@
-﻿using Application.Resourses.Commands.Doctors;
-using Application.Resourses.Commands.Patients;
-using Application.Resourses.Commands.Receptionists;
+﻿using Application.Resourses.Commands.Doctors.ChangeStatus;
+using Application.Resourses.Commands.Doctors.Create;
+using Application.Resourses.Commands.Doctors.Update;
+using Application.Resourses.Commands.Patients.Create;
+using Application.Resourses.Commands.Patients.Delete;
+using Application.Resourses.Commands.Patients.Update;
+using Application.Resourses.Commands.Receptionists.Create;
+using Application.Resourses.Commands.Receptionists.Delete;
+using Application.Resourses.Commands.Receptionists.Update;
 using Domain.Models.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

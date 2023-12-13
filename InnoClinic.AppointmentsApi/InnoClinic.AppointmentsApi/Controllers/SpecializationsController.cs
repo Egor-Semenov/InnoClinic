@@ -1,4 +1,6 @@
-﻿using Application.Resourses.Commands.Specializations;
+﻿using Application.Resourses.Commands.Specializations.ChangeStatus;
+using Application.Resourses.Commands.Specializations.Create;
+using Application.Resourses.Commands.Specializations.Update;
 using Domain.Models.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

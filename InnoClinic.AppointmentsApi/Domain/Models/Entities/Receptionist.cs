@@ -9,5 +9,7 @@ namespace Domain.Models.Entities
         public string MiddleName { get; set; }
         public string Email { get; set; }
         public int OfficeId { get; set; }
+
+        public Office Office { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿using Application.Resourses.Commands.Services;
+﻿using Application.DTOs.Services;
+using Application.Resourses.Commands.Services.ChangeStatus;
+using Application.Resourses.Commands.Services.Create;
+using Application.Resourses.Commands.Services.Update;
 using Domain.Models.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +20,7 @@ namespace InnoClinic.AppointmentsApi.Controllers
         }
 
         [HttpPost("create-service")]
-        public async Task<ActionResult<Service>> CreateServiceAsync(CreateServiceCommand command)
+        public async Task<ActionResult<ServiceDto>> CreateServiceAsync(CreateServiceCommand command)
         {
             var service = await _mediator.Send(command);
             return Ok(service);

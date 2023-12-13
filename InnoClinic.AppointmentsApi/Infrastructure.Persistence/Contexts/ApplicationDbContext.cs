@@ -30,6 +30,12 @@ namespace Infrastructure.Persistence.Contexts
             modelBuilder.Entity<SpecializationStatus>()
                 .HasKey(x => new { x.StatusId });
 
+            modelBuilder.Entity<Office>()
+                .HasKey(x => new { x.OfficeId });
+
+            modelBuilder.Entity<OfficeStatus>()
+                .HasKey(x => new { x.StatusId });
+
             modelBuilder.Entity<Doctor>()
                 .HasMany(x => x.Appointments)
                 .WithOne(x => x.Doctor)
@@ -80,6 +86,28 @@ namespace Infrastructure.Persistence.Contexts
                 .HasMany(x => x.Services)
                 .WithOne(x => x.ServiceCategory)
                 .HasForeignKey(x => x.ServiceCategoryId);
+
+            modelBuilder.Entity<Office>()
+                .HasMany(x => x.Doctors)
+                .WithOne(x => x.Office)
+                .HasForeignKey(x => x.OfficeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Office>()
+                .HasMany(x => x.Receptionists)
+                .WithOne(x => x.Office)
+                .HasForeignKey(x => x.OfficeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Office>()
+                .HasMany(x => x.Appointments)
+                .WithOne(x => x.Office)
+                .HasForeignKey(x => x.OfficeId);
+
+            modelBuilder.Entity<OfficeStatus>()
+                .HasMany(x => x.Offices)
+                .WithOne(x => x.OfficeStatus)
+                .HasForeignKey(x => x.StatusId);
 
             modelBuilder.Entity<AppointmentStatus>()
                 .HasData(new[]
@@ -185,6 +213,21 @@ namespace Infrastructure.Persistence.Contexts
                         CategoryName = "Diagnostics"
                     }
                 });
+
+            modelBuilder.Entity<OfficeStatus>()
+                .HasData(new[]
+                {
+                    new OfficeStatus
+                    {
+                        StatusId = 1,
+                        Status = "Active"
+                    },
+                    new OfficeStatus
+                    {
+                        StatusId = 2,
+                        Status = "Inactive"
+                    }
+                });
         }
 
         public DbSet<Appointment> Appointments { get; set; }
@@ -198,5 +241,7 @@ namespace Infrastructure.Persistence.Contexts
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<DoctorStatus> DoctorStatuses { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<Office> Offices { get; set; }
+        public DbSet<OfficeStatus> OfficeStatuses { get; set; }
     }
 }

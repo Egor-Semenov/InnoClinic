@@ -17,6 +17,7 @@ namespace Domain.Models.Entities
 
         public Specialization Specialization { get; set; }
         public DoctorStatus Status { get; set; }
+        public Office Office { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
     }
 }

@@ -1,8 +1,14 @@
-﻿using Domain.Interfaces.Repositories;
+﻿using Application.Resourses.Commands.Appointments.Approve;
+using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
+using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyModel;
+using Scrutor;
+using System.Reflection;
 
 namespace InnoClinic.AppointmentsApi.Extentions
 {
@@ -15,12 +21,20 @@ namespace InnoClinic.AppointmentsApi.Extentions
 
         public static void ConfigureRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IBaseRepository<Appointment>, AppointmentsRepository>();
-            services.AddScoped<IBaseRepository<Doctor>, DoctorsRepository>();
-            services.AddScoped<IBaseRepository<Patient>, PatientsRepository>();
-            services.AddScoped<IBaseRepository<Receptionist>, ReceptionistRepository>();
-            services.AddScoped<IBaseRepository<Service>, ServicesRepository>();
-            services.AddScoped<IBaseRepository<Specialization>, SpecializationsRepository>();
+            services.Scan(scan => scan
+                .FromAssembliesOf(typeof(AppointmentsRepository))
+                .AddClasses(classes => classes.AssignableTo(typeof(IBaseRepository<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+        }
+
+        public static void ConfigureCommandsAndQueriesHandlers(this IServiceCollection services)
+        {
+            services.Scan(scan => scan
+                .FromAssembliesOf(typeof(ApproveAppointmentCommandHandler))
+                .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
         }
     }
 }

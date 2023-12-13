@@ -29,14 +29,14 @@ namespace Infrastructure.Persistence.Repositories
 
         public IQueryable<Specialization> FindAll(bool isTrackChanges) =>
             !isTrackChanges ?
-        _dbContext.Set<Specialization>()
+                _dbContext.Set<Specialization>()
                 .AsNoTracking() :
             _dbContext.Set<Specialization>();
 
         public IQueryable<Specialization> FindByCondition(Expression<Func<Specialization, bool>> expression, bool isTrackChanges) =>
             !isTrackChanges ?
                 _dbContext.Set<Specialization>()
-        .Where(expression)
+                .Where(expression)
                 .AsNoTracking() :
             _dbContext.Set<Specialization>()
             .Where(expression);

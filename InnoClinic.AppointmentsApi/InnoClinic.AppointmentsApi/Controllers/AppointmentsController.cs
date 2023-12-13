@@ -1,4 +1,6 @@
-﻿using Application.Resourses.Commands.Appointments;
+﻿using Application.Resourses.Commands.Appointments.Approve;
+using Application.Resourses.Commands.Appointments.Create;
+using Application.Resourses.Commands.Appointments.Delete;
 using Application.Resourses.Queries.Appointments;
 using Domain.Models.Entities;
 using MediatR;

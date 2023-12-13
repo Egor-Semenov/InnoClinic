@@ -40,7 +40,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Office")
+                    b.Property<int>("OfficeId")
                         .HasColumnType("int");
 
                     b.Property<int>("PatientId")
@@ -61,6 +61,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorId");
+
+                    b.HasIndex("OfficeId");
 
                     b.HasIndex("PatientId");
 
@@ -152,6 +154,8 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AppointmentStatusStatusId");
 
+                    b.HasIndex("OfficeId");
+
                     b.HasIndex("SpecializationId");
 
                     b.HasIndex("StatusId");
@@ -209,6 +213,77 @@ namespace Infrastructure.Persistence.Migrations
                         new
                         {
                             StatusId = 7,
+                            Status = "Inactive"
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Models.Entities.Office", b =>
+                {
+                    b.Property<int>("OfficeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OfficeId"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HouseNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfficeNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OfficeId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("Offices");
+                });
+
+            modelBuilder.Entity("Domain.Models.Entities.OfficeStatus", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("OfficeStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            StatusId = 1,
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            StatusId = 2,
                             Status = "Inactive"
                         });
                 });
@@ -277,6 +352,8 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OfficeId");
 
                     b.ToTable("Receptionists");
                 });
@@ -433,6 +510,12 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Models.Entities.Office", "Office")
+                        .WithMany("Appointments")
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.Entities.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
@@ -459,6 +542,8 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Navigation("Doctor");
 
+                    b.Navigation("Office");
+
                     b.Navigation("Patient");
 
                     b.Navigation("Service");
@@ -474,6 +559,12 @@ namespace Infrastructure.Persistence.Migrations
                         .WithMany("Doctors")
                         .HasForeignKey("AppointmentStatusStatusId");
 
+                    b.HasOne("Domain.Models.Entities.Office", "Office")
+                        .WithMany("Doctors")
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
                         .WithMany("Doctors")
                         .HasForeignKey("SpecializationId")
@@ -486,9 +577,33 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Office");
+
                     b.Navigation("Specialization");
 
                     b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("Domain.Models.Entities.Office", b =>
+                {
+                    b.HasOne("Domain.Models.Entities.OfficeStatus", "OfficeStatus")
+                        .WithMany("Offices")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OfficeStatus");
+                });
+
+            modelBuilder.Entity("Domain.Models.Entities.Receptionist", b =>
+                {
+                    b.HasOne("Domain.Models.Entities.Office", "Office")
+                        .WithMany("Receptionists")
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Office");
                 });
 
             modelBuilder.Entity("Domain.Models.Entities.Service", b =>
@@ -536,6 +651,20 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Models.Entities.DoctorStatus", b =>
                 {
                     b.Navigation("Doctors");
+                });
+
+            modelBuilder.Entity("Domain.Models.Entities.Office", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("Doctors");
+
+                    b.Navigation("Receptionists");
+                });
+
+            modelBuilder.Entity("Domain.Models.Entities.OfficeStatus", b =>
+                {
+                    b.Navigation("Offices");
                 });
 
             modelBuilder.Entity("Domain.Models.Entities.Patient", b =>
