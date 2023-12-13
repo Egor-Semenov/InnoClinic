@@ -7,5 +7,6 @@ namespace Domain.Models.Entities
         public string Status { get; set; }
 
         public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<Doctor> Doctors { get; set; }
     }
 }
