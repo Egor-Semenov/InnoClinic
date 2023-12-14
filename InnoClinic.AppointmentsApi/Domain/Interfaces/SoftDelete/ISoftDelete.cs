@@ -1,9 +1,8 @@
 ﻿
-namespace Application.DTOs.Patients
+namespace Domain.Interfaces.SoftDelete
 {
-    public sealed class DeletePatientDto
+    public interface ISoftDelete
     {
-        public int Id { get; set; }
         public bool IsDeleted { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }
     }

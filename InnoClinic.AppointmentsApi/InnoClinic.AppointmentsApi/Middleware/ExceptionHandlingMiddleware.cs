@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿using Application.Services.Interfaces;
+using Domain.Exceptions;
 using System.Text.Json;
 
 namespace InnoClinic.AppointmentsApi.Middleware
@@ -6,27 +7,25 @@ namespace InnoClinic.AppointmentsApi.Middleware
     public sealed class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        
+        public ExceptionHandlingMiddleware(RequestDelegate next)
         {
             _next = next;
-            _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, ILoggerDbService loggerDbService)
         {
             try
             {
                 await _next(context);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                await HandleExceptionAsync(context, e);
+                await HandleExceptionAsync(context, ex, loggerDbService);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception, ILoggerDbService loggerDbService)
         {
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = exception switch
@@ -41,6 +40,7 @@ namespace InnoClinic.AppointmentsApi.Middleware
                 error = exception.Message
             };
 
+            await loggerDbService.LogAsync(exception);
             await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }

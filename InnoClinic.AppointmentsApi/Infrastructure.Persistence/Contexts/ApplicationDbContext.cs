@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Entities;
+using Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Contexts
@@ -7,8 +8,20 @@ namespace Infrastructure.Persistence.Contexts
     {
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
+            optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Appointment>()
+                .HasQueryFilter(x => x.IsDeleted == false);
+
+            modelBuilder.Entity<Patient>()
+                .HasQueryFilter(x => x.IsDeleted == false);
+
+            modelBuilder.Entity<Receptionist>()
+                .HasQueryFilter(x => x.IsDeleted == false);
+
             modelBuilder.Entity<AppointmentStatus>()
                 .HasKey(x => new { x.StatusId });
 
@@ -243,5 +256,6 @@ namespace Infrastructure.Persistence.Contexts
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Office> Offices { get; set; }
         public DbSet<OfficeStatus> OfficeStatuses { get; set; }
+        public DbSet<Log> Logs { get; set; }
     }
 }

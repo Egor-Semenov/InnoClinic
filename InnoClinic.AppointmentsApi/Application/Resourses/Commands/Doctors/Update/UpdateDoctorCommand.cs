@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Doctors;
-using Domain.Models.Entities;
 using Domain.Models.Enums;
 using MediatR;
 
