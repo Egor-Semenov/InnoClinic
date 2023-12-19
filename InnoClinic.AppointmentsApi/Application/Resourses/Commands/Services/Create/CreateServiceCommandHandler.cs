@@ -18,12 +18,14 @@ namespace Application.Resourses.Commands.Services.Create
     public sealed class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, ServiceDto>
     {
         private readonly IBaseRepository<Service> _serviceRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper)
+        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ServiceDto> Handle(CreateServiceCommand request, CancellationToken cancellationToken)
@@ -41,7 +43,9 @@ namespace Application.Resourses.Commands.Services.Create
                 StatusId = (int)ServiceStatuses.Active
             };
 
-            await _serviceRepository.Create(service);
+            _serviceRepository.Create(service);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ServiceDto>(service);
         }
 

@@ -1,14 +1,9 @@
 ﻿using Application.Resourses.Commands.Appointments.Approve;
 using Domain.Interfaces.Repositories;
-using Domain.Models.Entities;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyModel;
-using Scrutor;
-using System.Reflection;
 
 namespace InnoClinic.AppointmentsApi.Extentions
 {
@@ -26,6 +21,8 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .AddClasses(classes => classes.AssignableTo(typeof(IBaseRepository<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         public static void ConfigureCommandsAndQueriesHandlers(this IServiceCollection services)

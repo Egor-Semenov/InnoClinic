@@ -12,12 +12,14 @@ namespace Application.Resourses.Commands.Appointments.Approve
     public sealed class ApproveAppointmentCommandHandler : IRequestHandler<ApproveAppointmentCommand, ApproveAppointmentDto>
     {
         private readonly IBaseRepository<Appointment> _appointmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ApproveAppointmentCommandHandler(IBaseRepository<Appointment> appointmentRepository, IMapper mapper)
+        public ApproveAppointmentCommandHandler(IBaseRepository<Appointment> appointmentRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ApproveAppointmentDto> Handle(ApproveAppointmentCommand request, CancellationToken cancellationToken)
@@ -35,7 +37,9 @@ namespace Application.Resourses.Commands.Appointments.Approve
 
             appointment.StatusId = (int)AppointmentsStatuses.Approved;
 
-            await _appointmentRepository.Update(appointment);
+            _appointmentRepository.Update(appointment);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ApproveAppointmentDto>(appointment);
         }
     }

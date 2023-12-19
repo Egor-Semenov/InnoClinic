@@ -17,12 +17,14 @@ namespace Application.Resourses.Commands.Offices.ChangeStatus
     public sealed class ChangeOfficeStatusCommandHandler : IRequestHandler<ChangeOfficeStatusCommand, ChangeOfficeStatusDto>
     {
         private readonly IBaseRepository<Office> _officesRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ChangeOfficeStatusCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper)
+        public ChangeOfficeStatusCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ChangeOfficeStatusDto> Handle(ChangeOfficeStatusCommand request, CancellationToken cancellationToken)
@@ -40,7 +42,9 @@ namespace Application.Resourses.Commands.Offices.ChangeStatus
             }
 
             office.StatusId = (int)request.Status;
-            await _officesRepository.Update(office);
+
+            _officesRepository.Update(office);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ChangeOfficeStatusDto>(office);
         }
