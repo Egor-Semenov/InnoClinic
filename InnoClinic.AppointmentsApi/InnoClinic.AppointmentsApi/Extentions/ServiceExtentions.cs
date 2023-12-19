@@ -1,7 +1,9 @@
 ﻿using Application.Resourses.Commands.Appointments.Approve;
 using Application.Services;
 using Application.Services.Interfaces;
+using Application.Validators;
 using Domain.Interfaces.Repositories;
+using FluentValidation;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
 using MediatR;
@@ -30,12 +32,21 @@ namespace InnoClinic.AppointmentsApi.Extentions
         public static void ConfigureCommandsAndQueriesHandlers(this IServiceCollection services)
         {
             services.Scan(scan => scan
-                .FromAssembliesOf(typeof(ApproveAppointmentCommandHandler), typeof(LoggerDbService))
+                .FromAssembliesOf(typeof(ApproveAppointmentCommandHandler))
                 .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
             services.AddScoped<ILoggerDbService, LoggerDbService>();
+        }
+
+        public static void ConfigureValidators(this IServiceCollection services)
+        {
+            services.Scan(scan => scan
+            .FromAssembliesOf(typeof(DoctorCreationValidator))
+            .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
         }
     }
 }

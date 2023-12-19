@@ -21,11 +21,11 @@ namespace Application.Resourses.Commands.Patients.Update
 
         public async Task<UpdatePatientDto> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
         {
-            var patient = await _patientsRepository.FindByCondition(x => x.FirstName == request.FirstName, false).FirstOrDefaultAsync();
+            var patient = await _patientsRepository.FindByCondition(x => x.Id == request.Id, false).FirstOrDefaultAsync();
 
             if (patient is null)
             {
-                throw new NotFoundException($"Patient is not found.");
+                throw new NotFoundException($"Patient with id: {request.Id} is not found.");
             }
 
             patient.FirstName = request.FirstName;

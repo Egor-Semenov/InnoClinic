@@ -10,6 +10,6 @@ namespace Application.Resourses.Commands.Offices.Create
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }
         public string PhoneNumber { get; set; }
-        public string PhotoFilePath { get; set; }
+        public string? PhotoFilePath { get; set; }
     }
 }

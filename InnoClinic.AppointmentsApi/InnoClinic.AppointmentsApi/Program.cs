@@ -17,9 +17,11 @@ namespace InnoClinic.AppointmentsApi
             builder.Services.ConfigureSqlConnection(builder.Configuration);
             builder.Services.ConfigureRepositories();
             builder.Services.ConfigureCommandsAndQueriesHandlers();
+            builder.Services.ConfigureValidators();
 
             builder.Services.AddControllers();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
