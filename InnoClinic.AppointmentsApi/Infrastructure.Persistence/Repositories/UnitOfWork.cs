@@ -16,5 +16,10 @@ namespace Infrastructure.Persistence.Repositories
         {
             await _dbContext.SaveChangesAsync(token);
         }
+
+        public void Rollback()
+        {
+            _dbContext.ChangeTracker.Clear();
+        }
     }
 }
