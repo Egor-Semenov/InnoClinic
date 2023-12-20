@@ -1,5 +1,6 @@
 ﻿using Application.Services.Interfaces;
 using Domain.Exceptions;
+using InnoClinic.AppointmentsApi.Models;
 using System.Text.Json;
 
 namespace InnoClinic.AppointmentsApi.Middleware
@@ -35,13 +36,16 @@ namespace InnoClinic.AppointmentsApi.Middleware
                 _ => StatusCodes.Status500InternalServerError
             };
 
-            var response = new
+            var response = new ErrorResponseModel
             {
-                error = exception.Message
+                StatusCode = httpContext.Response.StatusCode,
+                ErrorMessage = exception.Message
             };
 
-            await loggerDbService.LogAsync(exception);
-            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await Task.WhenAll(
+                    loggerDbService.LogAsync(exception),
+                    httpContext.Response.WriteAsync(JsonSerializer.Serialize(response))
+                );
         }
     }
 }
