@@ -1,5 +1,5 @@
-﻿using Domain.Models.Entities;
-using Infrastructure.Persistence.Interceptors;
+﻿using Domain.Interfaces.SoftDelete;
+using Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Contexts
@@ -7,9 +7,6 @@ namespace Infrastructure.Persistence.Contexts
     public sealed class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-            optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -257,5 +254,27 @@ namespace Infrastructure.Persistence.Contexts
         public DbSet<Office> Offices { get; set; }
         public DbSet<OfficeStatus> OfficeStatuses { get; set; }
         public DbSet<Log> Logs { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateSoftDeleteStatuses();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateSoftDeleteStatuses()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Deleted && e.Entity is ISoftDelete);
+
+            foreach (var entry in entries)
+            {
+                entry.State = EntityState.Modified;
+                if (entry.Entity is ISoftDelete softDeleteEntity)
+                {
+                    softDeleteEntity.IsDeleted = true;
+                    softDeleteEntity.DeletedAt = DateTimeOffset.UtcNow;
+                }
+            }
+        }
     }
 }
