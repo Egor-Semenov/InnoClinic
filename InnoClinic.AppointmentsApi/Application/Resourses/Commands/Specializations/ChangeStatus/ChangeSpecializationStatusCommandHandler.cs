@@ -3,8 +3,10 @@ using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Application.Resourses.Commands.Specializations.ChangeStatus
 {
@@ -12,15 +14,29 @@ namespace Application.Resourses.Commands.Specializations.ChangeStatus
     {
         private readonly IBaseRepository<Specialization> _specializationsRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<ChangeSpecializationStatusCommand> _validator;
 
-        public ChangeSpecializationStatusCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper)
+        public ChangeSpecializationStatusCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IValidator<ChangeSpecializationStatusCommand> validator)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<ChangeSpecializationStatusDto> Handle(ChangeSpecializationStatusCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             var specialization = await _specializationsRepository.FindByCondition(x => x.SpecializationId == request.Id, false).FirstOrDefaultAsync();
             if (specialization is null)
             {

@@ -4,8 +4,10 @@ using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
 using Domain.Models.Enums;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Application.Resourses.Commands.Services.Create
 {
@@ -13,15 +15,29 @@ namespace Application.Resourses.Commands.Services.Create
     {
         private readonly IBaseRepository<Service> _serviceRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateServiceCommand> _validator;
 
-        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper)
+        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IValidator<CreateServiceCommand> validator)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<ServiceDto> Handle(CreateServiceCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             if (await CheckServiceAlreadyExists(request.ServiceName))
             {
                 throw new BadRequestException($"{request.ServiceName} service exists in the system already.");

@@ -6,6 +6,7 @@ using Application.Resourses.Commands.Patients.Delete;
 using Application.Resourses.Commands.Patients.Update;
 using Application.Resourses.Commands.Receptionists.Create;
 using Application.Resourses.Commands.Receptionists.Delete;
+using Application.Resourses.Commands.Receptionists.Update;
 using FluentValidation;
 
 namespace Application.Validators
@@ -62,7 +63,7 @@ namespace Application.Validators
         }
     }
 
-    public sealed class UpdateReceptionistValidator : AbstractValidator<UpdateDoctorCommand>
+    public sealed class UpdateReceptionistValidator : AbstractValidator<UpdateReceptionistCommand>
     {
         public UpdateReceptionistValidator()
         {
@@ -91,7 +92,7 @@ namespace Application.Validators
             RuleFor(x => x.LastName).NotEmpty().WithMessage("Please, enter the last name");
             RuleFor(x => x.BirthDate).NotEmpty().WithMessage("Please, select the date");
             RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Please, enter the phone number")
-                .Matches(@"^[0-9+]+$").WithMessage("Invalide phone number");
+                .Matches(@"^[0-9+]+$").WithMessage("You've entered an invalid phone number");
         }
     }
 
@@ -105,7 +106,7 @@ namespace Application.Validators
             RuleFor(x => x.LastName).NotEmpty().WithMessage("Please, enter the last name");
             RuleFor(x => x.BirthDate).NotEmpty().WithMessage("Please, select the date");
             RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Please, enter the phone number")
-                .Matches(@"^[0-9+]+$").WithMessage("Invalide phone number");
+                .Matches(@"^[0-9+]+$").WithMessage("You've entered an invalid phone number");
         }
     }
 

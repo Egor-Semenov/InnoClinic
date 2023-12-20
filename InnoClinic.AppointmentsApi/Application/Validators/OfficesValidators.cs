@@ -1,10 +1,7 @@
-﻿using Application.Resourses.Commands.Offices.Create;
+﻿using Application.Resourses.Commands.Offices.ChangeStatus;
+using Application.Resourses.Commands.Offices.Create;
+using Application.Resourses.Commands.Offices.Update;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Validators
 {
@@ -12,13 +9,35 @@ namespace Application.Validators
     {
         public CreateOfficeValidator() 
         {
-            RuleFor(x => x.City).NotEmpty().WithMessage("");
-            RuleFor(x => x.Street).NotEmpty().WithMessage("");
-            RuleFor(x => x.City).NotEmpty().WithMessage("");
-            RuleFor(x => x.City).NotEmpty().WithMessage("");
-            RuleFor(x => x.City).NotEmpty().WithMessage("");
-            RuleFor(x => x.City).NotEmpty().WithMessage("");
+            RuleFor(x => x.City).NotEmpty().WithMessage("Please, enter the office’s city");
+            RuleFor(x => x.Street).NotEmpty().WithMessage("Please, enter the office’s street");
+            RuleFor(x => x.HouseNumber).NotEmpty().WithMessage("Please, enter the office’s house number");
+            RuleFor(x => x.OfficeNumber).NotEmpty()
+                .When(x => x.OfficeNumber != null).WithMessage("Please, enter the office’s number");
+            RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Please, enter the phone number")
+                .Matches(@"^[0-9+]+$").WithMessage("You've entered an invalid phone number");
+        }
+    }
 
+    public sealed class UpdateOfficeValidator : AbstractValidator<UpdateOfficeCommand>
+    {
+        public UpdateOfficeValidator()
+        {
+            RuleFor(x => x.City).NotEmpty().WithMessage("Please, enter the office’s city");
+            RuleFor(x => x.Street).NotEmpty().WithMessage("Please, enter the office’s street");
+            RuleFor(x => x.HouseNumber).NotEmpty().WithMessage("Please, enter the office’s house number");
+            RuleFor(x => x.OfficeNumber).NotEmpty()
+                .When(x => x.OfficeNumber != null).WithMessage("Please, enter the office’s number");
+            RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Please, enter the phone number")
+                .Matches(@"^[0-9+]+$").WithMessage("You've entered an invalid phone number");
+        }
+    }
+
+    public sealed class ChangeOfficeStatusValidator : AbstractValidator<ChangeOfficeStatusCommand>
+    {
+        public ChangeOfficeStatusValidator()
+        {
+            RuleFor(x => x.Status).NotEmpty().WithMessage("Please, enter the status");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Doctors;
-using Application.Validators;
 using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;

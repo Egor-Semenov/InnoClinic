@@ -3,8 +3,10 @@ using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Application.Resourses.Commands.Services.ChangeStatus
 {
@@ -12,15 +14,29 @@ namespace Application.Resourses.Commands.Services.ChangeStatus
     {
         private readonly IBaseRepository<Service> _servicesRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<ChangeServiceStatusCommand> _validator;
 
-        public ChangeServiceStatusCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper)
+        public ChangeServiceStatusCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IValidator<ChangeServiceStatusCommand> validator)
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<ChangeServiceStatusDto> Handle(ChangeServiceStatusCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             var service = await _servicesRepository.FindByCondition(x => x.ServiceId == request.Id, false).FirstOrDefaultAsync();
             if (service is null)
             {
