@@ -1,4 +1,6 @@
 ﻿using Application.Resourses.Commands.Appointments.Approve;
+using Application.Services;
+using Application.Services.Interfaces;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
@@ -22,16 +24,19 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
+            services.AddScoped<ILogRepository, LogsRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         public static void ConfigureCommandsAndQueriesHandlers(this IServiceCollection services)
         {
             services.Scan(scan => scan
-                .FromAssembliesOf(typeof(ApproveAppointmentCommandHandler))
+                .FromAssembliesOf(typeof(ApproveAppointmentCommandHandler), typeof(LoggerDbService))
                 .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+            services.AddScoped<ILoggerDbService, LoggerDbService>();
         }
     }
 }

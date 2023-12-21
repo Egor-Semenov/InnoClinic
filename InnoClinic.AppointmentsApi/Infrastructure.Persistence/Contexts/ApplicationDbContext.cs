@@ -1,4 +1,5 @@
-﻿using Domain.Models.Entities;
+﻿using Domain.Interfaces.SoftDelete;
+using Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Contexts
@@ -9,6 +10,15 @@ namespace Infrastructure.Persistence.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Appointment>()
+                .HasQueryFilter(x => x.IsDeleted == false);
+
+            modelBuilder.Entity<Patient>()
+                .HasQueryFilter(x => x.IsDeleted == false);
+
+            modelBuilder.Entity<Receptionist>()
+                .HasQueryFilter(x => x.IsDeleted == false);
+
             modelBuilder.Entity<AppointmentStatus>()
                 .HasKey(x => new { x.StatusId });
 
@@ -243,5 +253,28 @@ namespace Infrastructure.Persistence.Contexts
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Office> Offices { get; set; }
         public DbSet<OfficeStatus> OfficeStatuses { get; set; }
+        public DbSet<Log> Logs { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateSoftDeleteStatuses();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateSoftDeleteStatuses()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Deleted && e.Entity is ISoftDelete);
+
+            foreach (var entry in entries)
+            {
+                entry.State = EntityState.Modified;
+                if (entry.Entity is ISoftDelete softDeleteEntity)
+                {
+                    softDeleteEntity.IsDeleted = true;
+                    softDeleteEntity.DeletedAt = DateTimeOffset.UtcNow;
+                }
+            }
+        }
     }
 }

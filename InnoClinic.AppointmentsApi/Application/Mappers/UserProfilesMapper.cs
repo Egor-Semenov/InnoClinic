@@ -1,18 +1,11 @@
 ﻿using Application.DTOs.Doctors;
-using Application.DTOs.Offices;
 using Application.DTOs.Patients;
 using Application.DTOs.Receptionists;
 using Application.Resourses.Commands.Doctors.Create;
 using Application.Resourses.Commands.Patients.Create;
 using Application.Resourses.Commands.Receptionists.Create;
 using AutoMapper;
-using Azure.Core;
 using Domain.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Mappers
 {

@@ -1,10 +1,8 @@
 ﻿using Application.DTOs.Doctors;
 using AutoMapper;
-using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Resourses.Commands.Doctors.Create
 {
