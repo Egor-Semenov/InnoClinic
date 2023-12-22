@@ -1,9 +1,12 @@
 ﻿using Application.DTOs.Offices;
 using AutoMapper;
+using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
 using Domain.Models.Enums;
+using FluentValidation;
 using MediatR;
+using System.Text;
 
 namespace Application.Resourses.Commands.Offices.Create
 {
@@ -12,16 +15,30 @@ namespace Application.Resourses.Commands.Offices.Create
         private readonly IBaseRepository<Office> _officesRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateOfficeCommand> _validator; 
 
-        public CreateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork)
+        public CreateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<CreateOfficeCommand> validator, IUnitOfWork unitOfWork)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
+            _validator = validator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<OfficeDto> Handle(CreateOfficeCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             var office = new Office
             {
                 City = request.City,

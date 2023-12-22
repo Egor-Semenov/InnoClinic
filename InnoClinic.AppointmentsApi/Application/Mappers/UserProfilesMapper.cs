@@ -6,6 +6,7 @@ using Application.Resourses.Commands.Patients.Create;
 using Application.Resourses.Commands.Receptionists.Create;
 using AutoMapper;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
 
 namespace Application.Mappers
 {
@@ -23,6 +24,11 @@ namespace Application.Mappers
                 .ForMember(dest => dest.Expirience, opt => opt.MapFrom(src => $"Expirience: {DateTime.Now.Year - src.CareerStartYear.Year + 1} years."));
 
             CreateMap<Doctor, ChangeDoctorStatusDto>();
+
+            //CreateMap<PagedList<Doctor>, PagedList<DoctorDto>>()
+            //  .ForMember(a => a.MetaData, opt => opt
+            //  .MapFrom(a => a.MetaData))
+            //  .ForMember(a => a.Items, opt => opt.MapFrom(a => a.Items));
 
             CreateMap<CreatePatientCommand, Patient>();
             CreateMap<Patient, PatientDto>();

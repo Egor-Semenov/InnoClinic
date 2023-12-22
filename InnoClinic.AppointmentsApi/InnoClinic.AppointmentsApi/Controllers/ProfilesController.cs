@@ -1,4 +1,5 @@
-﻿using Application.Resourses.Commands.Doctors.ChangeStatus;
+﻿using Application.DTOs.Doctors;
+using Application.Resourses.Commands.Doctors.ChangeStatus;
 using Application.Resourses.Commands.Doctors.Create;
 using Application.Resourses.Commands.Doctors.Update;
 using Application.Resourses.Commands.Patients.Create;
@@ -7,7 +8,9 @@ using Application.Resourses.Commands.Patients.Update;
 using Application.Resourses.Commands.Receptionists.Create;
 using Application.Resourses.Commands.Receptionists.Delete;
 using Application.Resourses.Commands.Receptionists.Update;
+using Application.Resourses.Queries.Doctors;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,6 +46,17 @@ namespace InnoClinic.AppointmentsApi.Controllers
         {
             var doctor = await _mediator.Send(command);
             return Ok(doctor);
+        }
+
+        [HttpGet("doctors")]
+        public async Task<PagedList<DoctorDto>> GetDoctors([FromQuery] DoctorParameters doctorParameters)
+        {
+            var doctors = await _mediator.Send(new GetDoctorsQuery
+            {
+                DoctorParameters = doctorParameters
+            });
+
+            return doctors;
         }
 
         [HttpPost("create-patient")]
