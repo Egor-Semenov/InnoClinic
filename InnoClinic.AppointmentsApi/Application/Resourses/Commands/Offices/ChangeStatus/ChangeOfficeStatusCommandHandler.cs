@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Offices.ChangeStatus
     public sealed class ChangeOfficeStatusCommandHandler : IRequestHandler<ChangeOfficeStatusCommand, ChangeOfficeStatusDto>
     {
         private readonly IBaseRepository<Office> _officesRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<ChangeOfficeStatusCommand> _validator;
 
-        public ChangeOfficeStatusCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<ChangeOfficeStatusCommand> validator)
+        public ChangeOfficeStatusCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeOfficeStatusCommand> validator)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -50,7 +52,9 @@ namespace Application.Resourses.Commands.Offices.ChangeStatus
             }
 
             office.StatusId = (int)request.Status;
-            await _officesRepository.Update(office);
+
+            _officesRepository.Update(office);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ChangeOfficeStatusDto>(office);
         }

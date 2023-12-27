@@ -6,8 +6,8 @@ namespace Domain.Interfaces.Repositories
     {
         IQueryable<T> FindAll(bool isTrackChanges);
         IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool isTrackChanges);
-        Task Create(T entity);
-        Task Update(T entity);
-        Task Delete(T entity);
+        void Create(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }

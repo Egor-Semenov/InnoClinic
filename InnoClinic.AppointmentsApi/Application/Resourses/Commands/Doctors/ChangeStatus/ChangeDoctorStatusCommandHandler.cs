@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Doctors.ChangeStatus
     public sealed class ChangeDoctorStatusCommandHandler : IRequestHandler<ChangeDoctorStatusCommand, ChangeDoctorStatusDto>
     {
         private readonly IBaseRepository<Doctor> _doctorsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         IValidator<ChangeDoctorStatusCommand> _validator;
 
-        public ChangeDoctorStatusCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IValidator<ChangeDoctorStatusCommand> validator)
+        public ChangeDoctorStatusCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeDoctorStatusCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -51,7 +53,9 @@ namespace Application.Resourses.Commands.Doctors.ChangeStatus
 
             doctor.StatusId = (int)request.Status;
 
-            await _doctorsRepository.Update(doctor);
+            _doctorsRepository.Update(doctor);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ChangeDoctorStatusDto>(doctor);
         }
     }

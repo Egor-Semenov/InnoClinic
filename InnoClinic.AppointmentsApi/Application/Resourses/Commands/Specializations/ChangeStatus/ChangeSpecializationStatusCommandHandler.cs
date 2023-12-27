@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Specializations.ChangeStatus
     public sealed class ChangeSpecializationStatusCommandHandler : IRequestHandler<ChangeSpecializationStatusCommand, ChangeSpecializationStatusDto>
     {
         private readonly IBaseRepository<Specialization> _specializationsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<ChangeSpecializationStatusCommand> _validator;
 
-        public ChangeSpecializationStatusCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IValidator<ChangeSpecializationStatusCommand> validator)
+        public ChangeSpecializationStatusCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeSpecializationStatusCommand> validator)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -50,7 +52,9 @@ namespace Application.Resourses.Commands.Specializations.ChangeStatus
 
             specialization.StatusId = (int)request.Status;
 
-            await _specializationsRepository.Update(specialization);
+            _specializationsRepository.Update(specialization);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ChangeSpecializationStatusDto>(specialization);
         }
     }

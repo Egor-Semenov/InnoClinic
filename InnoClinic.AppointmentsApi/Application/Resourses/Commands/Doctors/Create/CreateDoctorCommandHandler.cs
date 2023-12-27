@@ -12,13 +12,15 @@ namespace Application.Resourses.Commands.Doctors.Create
     public sealed class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, DoctorDto>
     {
         private readonly IBaseRepository<Doctor> _doctorsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateDoctorCommand> _validator;
 
-        public CreateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IValidator<CreateDoctorCommand> validator)
+        public CreateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateDoctorCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -50,7 +52,9 @@ namespace Application.Resourses.Commands.Doctors.Create
                 PhotoFilePath = request.PhotoFilePath
             };
 
-            await _doctorsRepository.Create(doctor);
+            _doctorsRepository.Create(doctor);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<DoctorDto>(doctor);
         }
     }

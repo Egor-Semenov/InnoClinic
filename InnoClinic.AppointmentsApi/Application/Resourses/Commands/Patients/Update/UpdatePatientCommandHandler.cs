@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Patients.Update
     public sealed class UpdatePatientCommandHandler : IRequestHandler<UpdatePatientCommand, UpdatePatientDto>
     {
         private readonly IBaseRepository<Patient> _patientsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<UpdatePatientCommand> _validator;
 
-        public UpdatePatientCommandHandler(IBaseRepository<Patient> patientsRepository, IMapper mapper, IValidator<UpdatePatientCommand> validator)
+        public UpdatePatientCommandHandler(IBaseRepository<Patient> patientsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdatePatientCommand> validator)
         {
             _patientsRepository = patientsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -51,7 +53,8 @@ namespace Application.Resourses.Commands.Patients.Update
             patient.BirthDate = request.BirthDate;
             patient.PhotoFilePath = request.PhotoFilePath;
 
-            await _patientsRepository.Update(patient);
+            _patientsRepository.Update(patient);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<UpdatePatientDto>(patient);
         }

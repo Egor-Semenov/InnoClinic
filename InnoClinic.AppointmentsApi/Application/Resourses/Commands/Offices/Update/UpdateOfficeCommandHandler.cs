@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Offices.Update
     public sealed class UpdateOfficeCommandHandler : IRequestHandler<UpdateOfficeCommand, UpdateOfficeDto>
     {
         private readonly IBaseRepository<Office> _officesRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateOfficeCommand> _validator;
 
-        public UpdateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<UpdateOfficeCommand> validator)
+        public UpdateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateOfficeCommand> validator)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -51,7 +53,9 @@ namespace Application.Resourses.Commands.Offices.Update
             office.PhoneNumber = request.PhoneNumber;
             office.PhotoFilePath = request.PhotoFilePath;
 
-            await _officesRepository.Update(office);
+            _officesRepository.Update(office);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<UpdateOfficeDto>(office);
         }
     }

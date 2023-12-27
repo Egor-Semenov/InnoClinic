@@ -14,13 +14,15 @@ namespace Application.Resourses.Commands.Services.Create
     public sealed class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, ServiceDto>
     {
         private readonly IBaseRepository<Service> _serviceRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateServiceCommand> _validator;
 
-        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IValidator<CreateServiceCommand> validator)
+        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateServiceCommand> validator)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -51,7 +53,9 @@ namespace Application.Resourses.Commands.Services.Create
                 StatusId = (int)ServiceStatuses.Active
             };
 
-            await _serviceRepository.Create(service);
+            _serviceRepository.Create(service);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ServiceDto>(service);
         }
 

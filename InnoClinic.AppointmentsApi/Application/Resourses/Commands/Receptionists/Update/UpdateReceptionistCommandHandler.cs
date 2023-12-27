@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Receptionists.Update
     public sealed class UpdateReceptionistCommandHandler : IRequestHandler<UpdateReceptionistCommand, UpdateReceptionistDto>
     {
         private readonly IBaseRepository<Receptionist> _receptionistsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateReceptionistCommand> _validator;
 
-        public UpdateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistsRepository, IMapper mapper, IValidator<UpdateReceptionistCommand> validator)
+        public UpdateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateReceptionistCommand> validator)
         {
             _receptionistsRepository = receptionistsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -48,7 +50,9 @@ namespace Application.Resourses.Commands.Receptionists.Update
             receptionist.MiddleName = request.MiddleName;
             receptionist.OfficeId = request.OfficeId;
 
-            await _receptionistsRepository.Update(receptionist);
+            _receptionistsRepository.Update(receptionist);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<UpdateReceptionistDto>(receptionist);
         }
     }

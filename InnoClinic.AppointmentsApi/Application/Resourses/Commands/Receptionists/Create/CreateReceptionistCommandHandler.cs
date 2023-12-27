@@ -12,13 +12,15 @@ namespace Application.Resourses.Commands.Receptionists.Create
     public sealed class CreateReceptionistCommandHandler : IRequestHandler<CreateReceptionistCommand, ReceptionistDto>
     {
         private readonly IBaseRepository<Receptionist> _receptionistRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateReceptionistCommand> _validator;
 
-        public CreateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistRepository, IMapper mapper, IValidator<CreateReceptionistCommand> validator)
+        public CreateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateReceptionistCommand> validator)
         {
             _receptionistRepository = receptionistRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -45,7 +47,9 @@ namespace Application.Resourses.Commands.Receptionists.Create
                 OfficeId = request.OfficeId
             };
 
-            await _receptionistRepository.Create(receptionist);
+            _receptionistRepository.Create(receptionist);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ReceptionistDto>(receptionist);
         }
     }

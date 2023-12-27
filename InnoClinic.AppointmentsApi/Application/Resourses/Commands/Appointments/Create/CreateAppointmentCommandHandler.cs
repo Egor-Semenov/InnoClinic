@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Appointments.Create
     public sealed class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointmentCommand, AppointmentDto>
     {
         private readonly IBaseRepository<Appointment> _appointmentsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateAppointmentCommand> _validator;
 
-        public CreateAppointmentCommandHandler(IBaseRepository<Appointment> appointmentsRepository, IMapper mapper, IValidator<CreateAppointmentCommand> validator)
+        public CreateAppointmentCommandHandler(IBaseRepository<Appointment> appointmentsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateAppointmentCommand> validator)
         {
             _appointmentsRepository = appointmentsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -50,7 +52,9 @@ namespace Application.Resourses.Commands.Appointments.Create
                 StatusId = (int)AppointmentsStatuses.Pending
             };
 
-            await _appointmentsRepository.Create(appointment);
+            _appointmentsRepository.Create(appointment);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<AppointmentDto>(appointment);
         }
     }

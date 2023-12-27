@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Doctors.Update
     public sealed class UpdateDoctorCommandHandler : IRequestHandler<UpdateDoctorCommand, UpdateDoctorDto>
     {
         private readonly IBaseRepository<Doctor> _doctorsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateDoctorCommand> _validator;
 
-        public UpdateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IValidator<UpdateDoctorCommand> validator)
+        public UpdateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateDoctorCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -54,7 +56,9 @@ namespace Application.Resourses.Commands.Doctors.Update
             doctor.PhotoFilePath = request.PhotoFilePath;
             doctor.StatusId = (int)request.Status;
 
-            await _doctorsRepository.Update(doctor);
+            _doctorsRepository.Update(doctor);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<UpdateDoctorDto>(doctor);
         }
     }

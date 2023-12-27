@@ -14,13 +14,15 @@ namespace Application.Resourses.Commands.Specializations.Create
     public sealed class CreateSpecializationCommandHandler : IRequestHandler<CreateSpecializationCommand, SpecializationDto>
     {
         private readonly IBaseRepository<Specialization> _specializationsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateSpecializationCommand> _validator;
 
-        public CreateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IValidator<CreateSpecializationCommand> validator)
+        public CreateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateSpecializationCommand> validator)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -49,7 +51,9 @@ namespace Application.Resourses.Commands.Specializations.Create
                 StatusId = (int)SpecializationStatuses.Active
             };
 
-            await _specializationsRepository.Create(specialization);
+            _specializationsRepository.Create(specialization);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<SpecializationDto>(specialization);
         }
 

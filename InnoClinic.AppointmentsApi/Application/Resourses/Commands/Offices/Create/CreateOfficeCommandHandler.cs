@@ -13,13 +13,15 @@ namespace Application.Resourses.Commands.Offices.Create
     public sealed class CreateOfficeCommandHandler : IRequestHandler<CreateOfficeCommand, OfficeDto>
     {
         private readonly IBaseRepository<Office> _officesRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateOfficeCommand> _validator; 
 
-        public CreateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<CreateOfficeCommand> validator)
+        public CreateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateOfficeCommand> validator)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -48,7 +50,9 @@ namespace Application.Resourses.Commands.Offices.Create
                 PhotoFilePath = request.PhotoFilePath
             };
 
-            await _officesRepository.Create(office);         
+            _officesRepository.Create(office);         
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<OfficeDto>(office);
         }
     }
