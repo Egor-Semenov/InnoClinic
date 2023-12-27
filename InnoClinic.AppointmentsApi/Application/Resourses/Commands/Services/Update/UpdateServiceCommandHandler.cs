@@ -3,8 +3,10 @@ using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Application.Resourses.Commands.Services.Update
 {
@@ -13,16 +15,30 @@ namespace Application.Resourses.Commands.Services.Update
         private readonly IBaseRepository<Service> _servicesRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<UpdateServiceCommand> _validator;
 
-        public UpdateServiceCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IUnitOfWork unitOfWork)
+        public UpdateServiceCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateServiceCommand> validator)
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
 
         public async Task<UpdateServiceDto> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             var service = await _servicesRepository.FindByCondition(x => x.ServiceId == request.Id, false).FirstOrDefaultAsync();
             if (service is null)
             {

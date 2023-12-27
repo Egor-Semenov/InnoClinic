@@ -4,6 +4,7 @@ namespace Domain.Models.Enums
     public enum AppointmentsStatuses
     {
         Approved = 1,
-        Pending = 2
+        Pending,
+        Canceled
     }
 }

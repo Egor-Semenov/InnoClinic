@@ -3,8 +3,10 @@ using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Application.Resourses.Commands.Doctors.Update
 {
@@ -13,16 +15,30 @@ namespace Application.Resourses.Commands.Doctors.Update
         private readonly IBaseRepository<Doctor> _doctorsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<UpdateDoctorCommand> _validator;
 
-        public UpdateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork)
+        public UpdateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateDoctorCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
 
         public async Task<UpdateDoctorDto> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             var doctor = await _doctorsRepository.FindByCondition(x => x.Email == request.Email, false).FirstOrDefaultAsync();
 
             if (doctor is null)

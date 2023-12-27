@@ -10,7 +10,7 @@
         public int OfficeId { get; set; }
         public DateTime Date { get; set; }
         public DateTime Time { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public int StatusId { get; set; }
 
         public Doctor Doctor { get; set; }

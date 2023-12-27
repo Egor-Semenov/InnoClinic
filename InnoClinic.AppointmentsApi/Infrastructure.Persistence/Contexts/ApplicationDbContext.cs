@@ -137,6 +137,11 @@ namespace Infrastructure.Persistence.Contexts
                     {
                         StatusId = 2,
                         Status = "Pending"
+                    },
+                    new AppointmentStatus
+                    {
+                        StatusId = 3,
+                        Status = "Canceled"
                     }
                 });
 
