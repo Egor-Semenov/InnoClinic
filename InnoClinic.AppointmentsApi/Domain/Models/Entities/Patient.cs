@@ -1,8 +1,6 @@
-﻿using Domain.Interfaces.SoftDelete;
-
-namespace Domain.Models.Entities
+﻿namespace Domain.Models.Entities
 {
-    public sealed class Patient : ISoftDelete
+    public sealed class Patient : SoftDelete
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -11,8 +9,6 @@ namespace Domain.Models.Entities
         public string PhoneNumber { get; set; }
         public DateTime BirthDate { get; set; }
         public string PhotoFilePath { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTimeOffset? DeletedAt { get; set; }
 
         public ICollection<Appointment> Appointments { get; set; }
     }

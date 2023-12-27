@@ -1,4 +1,4 @@
-﻿using Domain.Interfaces.SoftDelete;
+﻿using Domain;
 using Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,13 +11,19 @@ namespace Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Appointment>()
-                .HasQueryFilter(x => x.IsDeleted == false);
+                .HasQueryFilter(x => x.IsDeleted == false)
+                .HasIndex(x => x.IsDeleted)
+                .HasFilter("[IsDeleted] = 0");
 
             modelBuilder.Entity<Patient>()
-                .HasQueryFilter(x => x.IsDeleted == false);
+                .HasQueryFilter(x => x.IsDeleted == false)
+                .HasIndex(x => x.IsDeleted)
+                .HasFilter("[IsDeleted] = 0");
 
             modelBuilder.Entity<Receptionist>()
-                .HasQueryFilter(x => x.IsDeleted == false);
+                .HasQueryFilter(x => x.IsDeleted == false)
+                .HasIndex(x => x.IsDeleted)
+                .HasFilter("[IsDeleted] = 0");
 
             modelBuilder.Entity<AppointmentStatus>()
                 .HasKey(x => new { x.StatusId });
@@ -264,15 +270,15 @@ namespace Infrastructure.Persistence.Contexts
         private void UpdateSoftDeleteStatuses()
         {
             var entries = ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Deleted && e.Entity is ISoftDelete);
+                .Where(e => e.State == EntityState.Deleted && e.Entity is SoftDelete);
 
             foreach (var entry in entries)
             {
                 entry.State = EntityState.Modified;
-                if (entry.Entity is ISoftDelete softDeleteEntity)
+                if (entry.Entity is SoftDelete softDeleteEntity)
                 {
                     softDeleteEntity.IsDeleted = true;
-                    softDeleteEntity.DeletedAt = DateTimeOffset.UtcNow;
+                    softDeleteEntity.DeletedAt = DateTime.UtcNow;
                 }
             }
         }
