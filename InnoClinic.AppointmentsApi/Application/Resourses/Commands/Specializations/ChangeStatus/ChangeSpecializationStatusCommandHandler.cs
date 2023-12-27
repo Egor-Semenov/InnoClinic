@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Specializations.ChangeStatus
         private readonly IMapper _mapper;
         private readonly IValidator<ChangeSpecializationStatusCommand> _validator;
 
-        public ChangeSpecializationStatusCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IValidator<ChangeSpecializationStatusCommand> validator, IUnitOfWork unitOfWork)
+        public ChangeSpecializationStatusCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeSpecializationStatusCommand> validator)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;

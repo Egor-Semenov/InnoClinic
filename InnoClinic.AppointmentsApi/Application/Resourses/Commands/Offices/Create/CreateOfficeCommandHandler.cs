@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Offices.Create
         private readonly IMapper _mapper;
         private readonly IValidator<CreateOfficeCommand> _validator; 
 
-        public CreateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<CreateOfficeCommand> validator, IUnitOfWork unitOfWork)
+        public CreateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateOfficeCommand> validator)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;

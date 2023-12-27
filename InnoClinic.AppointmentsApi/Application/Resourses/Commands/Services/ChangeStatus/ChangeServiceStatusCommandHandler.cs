@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Services.ChangeStatus
         private readonly IMapper _mapper;
         private readonly IValidator<ChangeServiceStatusCommand> _validator;
 
-        public ChangeServiceStatusCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IValidator<ChangeServiceStatusCommand> validator, IUnitOfWork unitOfWork)
+        public ChangeServiceStatusCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeServiceStatusCommand> validator)
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;

@@ -18,7 +18,7 @@ namespace Application.Resourses.Commands.Specializations.Create
         private readonly IMapper _mapper;
         private readonly IValidator<CreateSpecializationCommand> _validator;
 
-        public CreateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IValidator<CreateSpecializationCommand> validator, IUnitOfWork unitOfWork)
+        public CreateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateSpecializationCommand> validator)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;

@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Patients.Update
         private readonly IMapper _mapper;
         private readonly IValidator<UpdatePatientCommand> _validator;
 
-        public UpdatePatientCommandHandler(IBaseRepository<Patient> patientsRepository, IMapper mapper, IValidator<UpdatePatientCommand> validator, IUnitOfWork unitOfWork)
+        public UpdatePatientCommandHandler(IBaseRepository<Patient> patientsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdatePatientCommand> validator)
         {
             _patientsRepository = patientsRepository;
             _mapper = mapper;

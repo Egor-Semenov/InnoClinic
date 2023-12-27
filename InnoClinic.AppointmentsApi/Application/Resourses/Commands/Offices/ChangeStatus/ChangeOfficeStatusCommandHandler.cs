@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Offices.ChangeStatus
         private readonly IMapper _mapper;
         private readonly IValidator<ChangeOfficeStatusCommand> _validator;
 
-        public ChangeOfficeStatusCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<ChangeOfficeStatusCommand> validator, IUnitOfWork unitOfWork)
+        public ChangeOfficeStatusCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeOfficeStatusCommand> validator)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;

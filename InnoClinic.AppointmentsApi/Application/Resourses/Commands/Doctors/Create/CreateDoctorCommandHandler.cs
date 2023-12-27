@@ -16,7 +16,7 @@ namespace Application.Resourses.Commands.Doctors.Create
         private readonly IMapper _mapper;
         private readonly IValidator<CreateDoctorCommand> _validator;
 
-        public CreateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IValidator<CreateDoctorCommand> validator, IUnitOfWork unitOfWork)
+        public CreateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateDoctorCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;

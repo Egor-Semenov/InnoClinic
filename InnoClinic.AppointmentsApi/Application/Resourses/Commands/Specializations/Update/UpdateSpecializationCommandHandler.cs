@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Specializations.Update
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateSpecializationCommand> _validator;
 
-        public UpdateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IValidator<UpdateSpecializationCommand> validator, IUnitOfWork unitOfWork)
+        public UpdateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateSpecializationCommand> validator)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;

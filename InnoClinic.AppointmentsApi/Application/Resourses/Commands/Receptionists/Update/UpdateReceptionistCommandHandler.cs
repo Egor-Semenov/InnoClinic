@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Receptionists.Update
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateReceptionistCommand> _validator;
 
-        public UpdateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistsRepository, IMapper mapper, IValidator<UpdateReceptionistCommand> validator, IUnitOfWork unitOfWork)
+        public UpdateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateReceptionistCommand> validator)
         {
             _receptionistsRepository = receptionistsRepository;
             _mapper = mapper;

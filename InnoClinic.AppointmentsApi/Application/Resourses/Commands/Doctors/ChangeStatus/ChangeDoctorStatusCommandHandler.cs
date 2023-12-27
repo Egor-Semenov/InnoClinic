@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Doctors.ChangeStatus
         private readonly IMapper _mapper;
         IValidator<ChangeDoctorStatusCommand> _validator;
 
-        public ChangeDoctorStatusCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IValidator<ChangeDoctorStatusCommand> validator, IUnitOfWork unitOfWork)
+        public ChangeDoctorStatusCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<ChangeDoctorStatusCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;

@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Services.Update
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateServiceCommand> _validator;
 
-        public UpdateServiceCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IValidator<UpdateServiceCommand> validator, IUnitOfWork unitOfWork)
+        public UpdateServiceCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateServiceCommand> validator)
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;

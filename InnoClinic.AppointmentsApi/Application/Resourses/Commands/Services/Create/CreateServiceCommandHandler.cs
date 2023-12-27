@@ -18,7 +18,7 @@ namespace Application.Resourses.Commands.Services.Create
         private readonly IMapper _mapper;
         private readonly IValidator<CreateServiceCommand> _validator;
 
-        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IValidator<CreateServiceCommand> validator, IUnitOfWork unitOfWork)
+        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateServiceCommand> validator)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;

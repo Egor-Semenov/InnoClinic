@@ -16,7 +16,7 @@ namespace Application.Resourses.Commands.Receptionists.Create
         private readonly IMapper _mapper;
         private readonly IValidator<CreateReceptionistCommand> _validator;
 
-        public CreateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistRepository, IMapper mapper, IValidator<CreateReceptionistCommand> validator, IUnitOfWork unitOfWork)
+        public CreateReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateReceptionistCommand> validator)
         {
             _receptionistRepository = receptionistRepository;
             _mapper = mapper;

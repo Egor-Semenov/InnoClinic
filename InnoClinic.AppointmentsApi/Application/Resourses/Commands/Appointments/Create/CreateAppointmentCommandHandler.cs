@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Appointments.Create
         private readonly IMapper _mapper;
         private readonly IValidator<CreateAppointmentCommand> _validator;
 
-        public CreateAppointmentCommandHandler(IBaseRepository<Appointment> appointmentsRepository, IMapper mapper, IValidator<CreateAppointmentCommand> validator, IUnitOfWork unitOfWork)
+        public CreateAppointmentCommandHandler(IBaseRepository<Appointment> appointmentsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateAppointmentCommand> validator)
         {
             _appointmentsRepository = appointmentsRepository;
             _mapper = mapper;

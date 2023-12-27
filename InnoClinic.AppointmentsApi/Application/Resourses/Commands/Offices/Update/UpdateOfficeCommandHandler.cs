@@ -17,7 +17,7 @@ namespace Application.Resourses.Commands.Offices.Update
         private readonly IMapper _mapper;
         private readonly IValidator<UpdateOfficeCommand> _validator;
 
-        public UpdateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IValidator<UpdateOfficeCommand> validator, IUnitOfWork unitOfWork)
+        public UpdateOfficeCommandHandler(IBaseRepository<Office> officesRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateOfficeCommand> validator)
         {
             _officesRepository = officesRepository;
             _mapper = mapper;

@@ -1,7 +1,5 @@
 ﻿using Domain.Models.Entities;
 using Infrastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories
 {
