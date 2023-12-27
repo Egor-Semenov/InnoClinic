@@ -11,12 +11,14 @@ namespace Application.Resourses.Commands.Services.Update
     public sealed class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand, UpdateServiceDto>
     {
         private readonly IBaseRepository<Service> _servicesRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateServiceCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper)
+        public UpdateServiceCommandHandler(IBaseRepository<Service> servicesRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateServiceDto> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
@@ -31,7 +33,9 @@ namespace Application.Resourses.Commands.Services.Update
             service.Price = request.Price;
             service.ServiceCategoryId = (int)request.Category;
 
-            await _servicesRepository.Update(service);
+            _servicesRepository.Update(service);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<UpdateServiceDto>(service);
         }
     }

@@ -12,12 +12,14 @@ namespace Application.Resourses.Commands.Specializations.Create
     public sealed class CreateSpecializationCommandHandler : IRequestHandler<CreateSpecializationCommand, SpecializationDto>
     {
         private readonly IBaseRepository<Specialization> _specializationsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CreateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper)
+        public CreateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<SpecializationDto> Handle(CreateSpecializationCommand request, CancellationToken cancellationToken)
@@ -33,7 +35,9 @@ namespace Application.Resourses.Commands.Specializations.Create
                 StatusId = (int)SpecializationStatuses.Active
             };
 
-            await _specializationsRepository.Create(specialization);
+            _specializationsRepository.Create(specialization);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<SpecializationDto>(specialization);
         }
 

@@ -25,6 +25,7 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .WithScopedLifetime());
 
             services.AddScoped<ILogRepository, LogsRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         public static void ConfigureCommandsAndQueriesHandlers(this IServiceCollection services)

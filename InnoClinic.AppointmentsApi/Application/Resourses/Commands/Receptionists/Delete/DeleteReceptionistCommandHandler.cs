@@ -11,12 +11,14 @@ namespace Application.Resourses.Commands.Receptionists.Delete
     public sealed class DeleteReceptionistCommandHandler : IRequestHandler<DeleteReceptionistCommand, DeleteReceptionistDto>
     {
         private readonly IBaseRepository<Receptionist> _receptionistsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DeleteReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistsRepository, IMapper mapper)
+        public DeleteReceptionistCommandHandler(IBaseRepository<Receptionist> receptionistsRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _receptionistsRepository = receptionistsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<DeleteReceptionistDto> Handle(DeleteReceptionistCommand request, CancellationToken cancellationToken)
@@ -28,7 +30,9 @@ namespace Application.Resourses.Commands.Receptionists.Delete
                 throw new NotFoundException($"Receptionist with id: {request.Id} is not found.");
             }
 
-            await _receptionistsRepository.Delete(receptionist);
+            _receptionistsRepository.Delete(receptionist);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<DeleteReceptionistDto>(receptionist);
         }
     }

@@ -19,9 +19,11 @@ namespace Application.Mappers
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (ServiceCategories)src.StatusId));
 
             CreateMap<Service, ChangeServiceStatusDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (ServiceCategories)src.StatusId));
 
             CreateMap<Service, UpdateServiceDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (ServiceCategories)src.ServiceCategoryId));
         }
     }

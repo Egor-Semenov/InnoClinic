@@ -11,12 +11,14 @@ namespace Application.Resourses.Commands.Specializations.Update
     public sealed class UpdateSpecializationCommandHandler : IRequestHandler<UpdateSpecializationCommand, UpdateSpecializationDto>
     {
         private readonly IBaseRepository<Specialization> _specializationsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper)
+        public UpdateSpecializationCommandHandler(IBaseRepository<Specialization> specializationsRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateSpecializationDto> Handle(UpdateSpecializationCommand request, CancellationToken cancellationToken)
@@ -29,7 +31,9 @@ namespace Application.Resourses.Commands.Specializations.Update
 
             specialization.SpecializationName = specialization.SpecializationName;
 
-            await _specializationsRepository.Update(specialization);
+            _specializationsRepository.Update(specialization);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<UpdateSpecializationDto>(specialization);
         }
     }
