@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOs.Receptionists
+﻿namespace Application.DTOs.Receptionists
 {
     public sealed class UpdateReceptionistDto
     {

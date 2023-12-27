@@ -1,7 +1,6 @@
-﻿
-namespace Domain.Models.Entities
+﻿namespace Domain.Models.Entities
 {
-    public sealed class Appointment
+    public sealed class Appointment : SoftDelete
     {
         public int Id { get; set; }
         public int DoctorId { get; set; }
