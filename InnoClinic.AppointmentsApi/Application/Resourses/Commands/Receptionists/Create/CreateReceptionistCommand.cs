@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Receptionists;
-using Domain.Models.Entities;
 using MediatR;
 
 namespace Application.Resourses.Commands.Receptionists.Create

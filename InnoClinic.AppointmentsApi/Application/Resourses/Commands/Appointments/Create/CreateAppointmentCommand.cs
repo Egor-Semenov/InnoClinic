@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Appointments;
-using Domain.Models.Entities;
 using MediatR;
 
 namespace Application.Resourses.Commands.Appointments.Create

@@ -1,7 +1,6 @@
-﻿
-namespace Domain.Models.Entities
+﻿namespace Domain.Models.Entities
 {
-    public sealed class Receptionist
+    public sealed class Receptionist : SoftDelete
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
