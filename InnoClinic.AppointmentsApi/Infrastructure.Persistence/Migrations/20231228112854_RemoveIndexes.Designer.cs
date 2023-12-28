@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231222110255_UpdateSoftDelete")]
-    partial class UpdateSoftDelete
+    [Migration("20231228112854_RemoveIndexes")]
+    partial class RemoveIndexes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DoctorId")
@@ -70,9 +69,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorId");
-
-                    b.HasIndex("IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("OfficeId");
 
@@ -113,6 +109,11 @@ namespace Infrastructure.Persistence.Migrations
                         {
                             StatusId = 2,
                             Status = "Pending"
+                        },
+                        new
+                        {
+                            StatusId = 3,
+                            Status = "Canceled"
                         });
                 });
 
@@ -146,14 +147,12 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OfficeId")
                         .HasColumnType("int");
 
                     b.Property<string>("PhotoFilePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SpecializationId")
@@ -270,7 +269,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OfficeNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -278,7 +276,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoFilePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusId")
@@ -350,7 +347,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -362,9 +358,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Patients");
                 });
@@ -396,16 +389,15 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OfficeId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<string>("PhotoFilePath")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
+                    b.HasKey("Id");
 
                     b.HasIndex("OfficeId");
 
@@ -430,12 +422,17 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SpecializationId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
                     b.HasKey("ServiceId");
 
                     b.HasIndex("ServiceCategoryId");
+
+                    b.HasIndex("SpecializationId");
 
                     b.HasIndex("StatusId");
 
@@ -585,7 +582,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
                         .WithMany("Appointments")
                         .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Entities.AppointmentStatus", "Status")
@@ -622,7 +619,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
                         .WithMany("Doctors")
                         .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Entities.DoctorStatus", "Status")
@@ -668,6 +665,12 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
+                        .WithMany("Services")
+                        .HasForeignKey("SpecializationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.Entities.ServiceStatus", "Status")
                         .WithMany("Services")
                         .HasForeignKey("StatusId")
@@ -675,6 +678,8 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("ServiceCategory");
+
+                    b.Navigation("Specialization");
 
                     b.Navigation("Status");
                 });
@@ -746,6 +751,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("Doctors");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("Domain.Models.Entities.SpecializationStatus", b =>

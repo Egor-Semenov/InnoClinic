@@ -15,6 +15,7 @@ namespace Application.Mappers
                 .ForMember(dest => dest.ServiceCategoryId, opt => opt.MapFrom(src => (int)src.Category));
 
             CreateMap<Service, ServiceDto>()
+                //.ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.SpecializationId))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (ServiceCategories)src.ServiceCategoryId))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (ServiceCategories)src.StatusId));
 

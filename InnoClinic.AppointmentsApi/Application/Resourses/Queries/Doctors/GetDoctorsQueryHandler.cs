@@ -1,14 +1,8 @@
 ﻿using Application.DTOs.Doctors;
 using AutoMapper;
 using Domain.Interfaces.Repositories;
-using Domain.Models.Entities;
 using Domain.RequestFeatures;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Resourses.Queries.Doctors
 {
@@ -25,9 +19,10 @@ namespace Application.Resourses.Queries.Doctors
 
         public async Task<PagedList<DoctorDto>> Handle(GetDoctorsQuery request, CancellationToken cancellationToken)
         {
-            var doctors = await _doctorsRepository.GetDoctors(request.DoctorParameters, false);
+            var doctors = await _doctorsRepository.GetDoctorsAsync(request.DoctorParameters, false);
 
-            return _mapper.Map<PagedList<DoctorDto>>(doctors);
+            var doctorsDto = _mapper.Map<List<DoctorDto>>(doctors);
+            return new PagedList<DoctorDto>(doctorsDto, doctors.MetaData.TotalCount, doctors.MetaData.CurrentPage, doctors.MetaData.PageSize);
         }
     }
 }

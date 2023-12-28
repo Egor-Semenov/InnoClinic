@@ -11,19 +11,13 @@ namespace Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Appointment>()
-                .HasQueryFilter(x => x.IsDeleted == false)
-                .HasIndex(x => x.IsDeleted)
-                .HasFilter("[IsDeleted] = 0");
+                .HasQueryFilter(x => x.IsDeleted == false);
 
             modelBuilder.Entity<Patient>()
-                .HasQueryFilter(x => x.IsDeleted == false)
-                .HasIndex(x => x.IsDeleted)
-                .HasFilter("[IsDeleted] = 0");
+                .HasQueryFilter(x => x.IsDeleted == false);
 
             modelBuilder.Entity<Receptionist>()
-                .HasQueryFilter(x => x.IsDeleted == false)
-                .HasIndex(x => x.IsDeleted)
-                .HasFilter("[IsDeleted] = 0");
+                .HasQueryFilter(x => x.IsDeleted == false);
 
             modelBuilder.Entity<AppointmentStatus>()
                 .HasKey(x => new { x.StatusId });
@@ -66,10 +60,17 @@ namespace Infrastructure.Persistence.Contexts
             modelBuilder.Entity<Specialization>()
                 .HasMany(x => x.Appointments)
                 .WithOne(x => x.Specialization)
-                .HasForeignKey(x => x.SpecializationId);
+                .HasForeignKey(x => x.SpecializationId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Specialization>()
                 .HasMany(x => x.Doctors)
+                .WithOne(x => x.Specialization)
+                .HasForeignKey(x => x.SpecializationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Specialization>()
+                .HasMany(x => x.Services)
                 .WithOne(x => x.Specialization)
                 .HasForeignKey(x => x.SpecializationId);
 
@@ -137,6 +138,11 @@ namespace Infrastructure.Persistence.Contexts
                     {
                         StatusId = 2,
                         Status = "Pending"
+                    },
+                    new AppointmentStatus
+                    {
+                        StatusId = 3,
+                        Status = "Canceled"
                     }
                 });
 

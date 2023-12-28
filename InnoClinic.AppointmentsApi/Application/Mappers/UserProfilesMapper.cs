@@ -25,11 +25,6 @@ namespace Application.Mappers
 
             CreateMap<Doctor, ChangeDoctorStatusDto>();
 
-            //CreateMap<PagedList<Doctor>, PagedList<DoctorDto>>()
-            //  .ForMember(a => a.MetaData, opt => opt
-            //  .MapFrom(a => a.MetaData))
-            //  .ForMember(a => a.Items, opt => opt.MapFrom(a => a.Items));
-
             CreateMap<CreatePatientCommand, Patient>();
             CreateMap<Patient, PatientDto>();
             CreateMap<Patient, DeletePatientDto>();

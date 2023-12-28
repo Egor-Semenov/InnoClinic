@@ -1,4 +1,6 @@
 ﻿using Application.DTOs.Doctors;
+using Application.DTOs.Patients;
+using Application.DTOs.Receptionists;
 using Application.Resourses.Commands.Doctors.ChangeStatus;
 using Application.Resourses.Commands.Doctors.Create;
 using Application.Resourses.Commands.Doctors.Update;
@@ -9,10 +11,13 @@ using Application.Resourses.Commands.Receptionists.Create;
 using Application.Resourses.Commands.Receptionists.Delete;
 using Application.Resourses.Commands.Receptionists.Update;
 using Application.Resourses.Queries.Doctors;
+using Application.Resourses.Queries.Patients;
+using Application.Resourses.Queries.Receptionists;
 using Domain.Models.Entities;
 using Domain.RequestFeatures;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace InnoClinic.AppointmentsApi.Controllers
 {
@@ -56,6 +61,9 @@ namespace InnoClinic.AppointmentsApi.Controllers
                 DoctorParameters = doctorParameters
             });
 
+            Response.Headers.Add("X-Pagination",
+                JsonConvert.SerializeObject(doctors.MetaData));
+
             return doctors;
         }
 
@@ -80,6 +88,20 @@ namespace InnoClinic.AppointmentsApi.Controllers
             return Ok(patient);
         }
 
+        [HttpGet("patients")]
+        public async Task<PagedList<PatientDto>> GetPatientsAsync([FromQuery] PatientParameters patientParameters)
+        {
+            var patients = await _mediator.Send(new GetPatientsQuery
+            {
+                PatientParameters = patientParameters
+            });
+
+            Response.Headers.Add("X-Pagination",
+                JsonConvert.SerializeObject(patients.MetaData));
+
+            return patients;
+        }
+
         [HttpPost("create-receptionist")]
         public async Task<IActionResult> CreateReceptionistProfileAsync([FromBody] CreateReceptionistCommand command)
         {
@@ -99,6 +121,20 @@ namespace InnoClinic.AppointmentsApi.Controllers
         {
             var receptionist = await _mediator.Send(command);
             return Ok(receptionist);
+        }
+
+        [HttpGet("receptionists")]
+        public async Task<PagedList<ReceptionistDto>> GetReceptionistsAsync([FromQuery] ReceptionistParameters receptionistParameters)
+        {
+            var receptionists = await _mediator.Send(new GetReceptionistsQuery
+            {
+                ReceptionistParameters = receptionistParameters
+            });
+
+            Response.Headers.Add("X-Pagination",
+                JsonConvert.SerializeObject(receptionists.MetaData));
+
+            return receptionists;
         }
     }
 }
