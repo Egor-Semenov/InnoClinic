@@ -67,9 +67,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.HasIndex("IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
                     b.HasIndex("OfficeId");
 
                     b.HasIndex("PatientId");
@@ -359,9 +356,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
                     b.ToTable("Patients");
                 });
 
@@ -402,9 +396,6 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsDeleted")
-                        .HasFilter("[IsDeleted] = 0");
-
                     b.HasIndex("OfficeId");
 
                     b.ToTable("Receptionists");
@@ -428,12 +419,17 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SpecializationId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
                     b.HasKey("ServiceId");
 
                     b.HasIndex("ServiceCategoryId");
+
+                    b.HasIndex("SpecializationId");
 
                     b.HasIndex("StatusId");
 
@@ -583,7 +579,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
                         .WithMany("Appointments")
                         .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Entities.AppointmentStatus", "Status")
@@ -620,7 +616,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
                         .WithMany("Doctors")
                         .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Models.Entities.DoctorStatus", "Status")
@@ -666,6 +662,12 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Models.Entities.Specialization", "Specialization")
+                        .WithMany("Services")
+                        .HasForeignKey("SpecializationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.Entities.ServiceStatus", "Status")
                         .WithMany("Services")
                         .HasForeignKey("StatusId")
@@ -673,6 +675,8 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("ServiceCategory");
+
+                    b.Navigation("Specialization");
 
                     b.Navigation("Status");
                 });
@@ -744,6 +748,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("Doctors");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("Domain.Models.Entities.SpecializationStatus", b =>

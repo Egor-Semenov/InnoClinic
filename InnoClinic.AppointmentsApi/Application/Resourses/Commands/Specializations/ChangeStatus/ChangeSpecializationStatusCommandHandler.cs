@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Specializations.ChangeStatus
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ChangeSpecializationStatusDto> Handle(ChangeSpecializationStatusCommand request, CancellationToken cancellationToken)

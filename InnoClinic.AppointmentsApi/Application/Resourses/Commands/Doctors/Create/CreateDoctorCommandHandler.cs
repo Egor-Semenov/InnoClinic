@@ -20,8 +20,8 @@ namespace Application.Resourses.Commands.Doctors.Create
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<DoctorDto> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)

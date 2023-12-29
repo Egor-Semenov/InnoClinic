@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Models.Entities
 {
     public sealed class Office
     {
@@ -10,6 +12,9 @@
         public string PhoneNumber { get; set; }
         public int StatusId { get; set; }
         public string? PhotoFilePath { get; set; }
+        
+        [NotMapped]
+        public string Address => $"{City}, {Street} - {HouseNumber}, office: {OfficeNumber}";
 
         public OfficeStatus OfficeStatus { get; set; }
         public ICollection<Appointment> Appointments { get; set; }

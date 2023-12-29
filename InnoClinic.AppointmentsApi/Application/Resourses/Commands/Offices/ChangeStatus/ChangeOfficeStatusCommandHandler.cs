@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Offices.ChangeStatus
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ChangeOfficeStatusDto> Handle(ChangeOfficeStatusCommand request, CancellationToken cancellationToken)

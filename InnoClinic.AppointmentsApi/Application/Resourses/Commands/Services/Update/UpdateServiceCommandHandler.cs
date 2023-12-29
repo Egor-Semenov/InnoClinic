@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Services.Update
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateServiceDto> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)

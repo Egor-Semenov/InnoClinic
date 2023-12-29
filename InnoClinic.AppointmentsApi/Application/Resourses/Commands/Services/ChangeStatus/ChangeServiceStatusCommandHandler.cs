@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Services.ChangeStatus
         {
             _servicesRepository = servicesRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ChangeServiceStatusDto> Handle(ChangeServiceStatusCommand request, CancellationToken cancellationToken)

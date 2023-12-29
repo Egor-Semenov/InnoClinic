@@ -8,6 +8,7 @@ namespace Application.Resourses.Commands.Services.Create
     {
         public string ServiceName { get; set; }
         public double Price { get; set; }
+        public int SpecializationId { get; set; }
         public ServiceCategories Category { get; set; }
     }
 }

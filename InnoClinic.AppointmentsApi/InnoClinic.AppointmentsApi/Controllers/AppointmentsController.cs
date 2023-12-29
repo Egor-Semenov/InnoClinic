@@ -1,10 +1,13 @@
-﻿using Application.Resourses.Commands.Appointments.Approve;
+﻿using Application.DTOs.Appointments;
+using Application.Resourses.Commands.Appointments.Approve;
 using Application.Resourses.Commands.Appointments.Create;
 using Application.Resourses.Commands.Appointments.Delete;
 using Application.Resourses.Queries.Appointments;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace InnoClinic.AppointmentsApi.Controllers
 {
@@ -26,7 +29,7 @@ namespace InnoClinic.AppointmentsApi.Controllers
             return Ok(appointment);
         }
 
-        [HttpPost("approve-appointment")]
+        [HttpPut("approve-appointment")]
         public async Task<IActionResult> ApproveAppointmentAsync([FromBody] ApproveAppointmentCommand command)
         {
             var appointment = await _mediator.Send(command);
@@ -45,6 +48,20 @@ namespace InnoClinic.AppointmentsApi.Controllers
         {
             var appointment = await _mediator.Send(query);
             return appointment;
+        }
+
+        [HttpGet("appointments")]
+        public async Task<PagedList<AppointmentDto>> GetAppointmentsAsync([FromQuery] AppointmentParameters appointmentParameters)
+        {
+            var appointments = await _mediator.Send(new GetAppointmentsQuery
+            {
+                AppointmentParameters = appointmentParameters
+            });
+
+            Response.Headers.Add("X-Pagination",
+                JsonConvert.SerializeObject(appointments.MetaData));
+
+            return appointments;
         }
     }
 }

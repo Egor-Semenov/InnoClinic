@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Receptionists.Update
         {
             _receptionistsRepository = receptionistsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateReceptionistDto> Handle(UpdateReceptionistCommand request, CancellationToken cancellationToken)

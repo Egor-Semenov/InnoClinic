@@ -22,8 +22,8 @@ namespace Application.Resourses.Commands.Specializations.Create
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<SpecializationDto> Handle(CreateSpecializationCommand request, CancellationToken cancellationToken)
