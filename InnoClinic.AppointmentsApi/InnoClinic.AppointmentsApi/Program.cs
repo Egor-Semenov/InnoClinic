@@ -19,6 +19,8 @@ namespace InnoClinic.AppointmentsApi
             builder.Services.ConfigureCommandsAndQueriesHandlers();
             builder.Services.ConfigureValidators();
 
+            builder.Services.ConfigureQuartz();
+
             builder.Services.AddControllers();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
