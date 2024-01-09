@@ -9,11 +9,13 @@ using Application.Resourses.Commands.Receptionists.Delete;
 using Application.Resourses.Commands.Receptionists.Update;
 using Domain.Models.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinic.AppointmentsApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ProfilesController : ControllerBase
     {
