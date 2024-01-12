@@ -1,7 +1,9 @@
 using Application.Mappers;
+using HealthChecks.UI.Client;
 using InnoClinic.AppointmentsApi.Extentions;
 using InnoClinic.AppointmentsApi.Middleware;
 using MediatR;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Reflection;
 
 namespace InnoClinic.AppointmentsApi
@@ -21,6 +23,8 @@ namespace InnoClinic.AppointmentsApi
 
             builder.Services.AddControllers();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddHealthChecks()
+                .AddSqlServer(builder.Configuration.GetConnectionString("sqlConnection")!);
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -39,8 +43,12 @@ namespace InnoClinic.AppointmentsApi
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.MapHealthChecks("/_health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
