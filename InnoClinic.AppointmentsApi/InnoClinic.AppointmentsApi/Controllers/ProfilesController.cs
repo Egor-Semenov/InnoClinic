@@ -16,12 +16,14 @@ using Application.Resourses.Queries.Receptionists;
 using Domain.Models.Entities;
 using Domain.RequestFeatures;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace InnoClinic.AppointmentsApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ProfilesController : ControllerBase
     {
