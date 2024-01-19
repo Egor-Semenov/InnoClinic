@@ -6,9 +6,11 @@ using Domain.Interfaces.Repositories;
 using FluentValidation;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
+using InnoClinic.BackgroundJobs.Jobs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Quartz;
 
 namespace InnoClinic.AppointmentsApi.Extentions
 {
@@ -80,6 +82,23 @@ namespace InnoClinic.AppointmentsApi.Extentions
             .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+        }
+
+        public static void ConfigureQuartz(this IServiceCollection services)
+        {
+            services.AddQuartz(opt =>
+            {
+                var jobKey = "DeleteJob";
+                opt.AddJob<DeleteJob>(opt => opt.WithIdentity(jobKey));
+                opt.AddTrigger(opt =>
+                {
+                    opt.ForJob(jobKey)
+                    .WithIdentity("DeleteJobTrigger")
+                    .WithCronSchedule(CronScheduleBuilder.CronSchedule("0/5 * * ? * *"));
+                });
+            });
+
+            services.AddQuartzHostedService(config => config.WaitForJobsToComplete = true);
         }
     }
 }
