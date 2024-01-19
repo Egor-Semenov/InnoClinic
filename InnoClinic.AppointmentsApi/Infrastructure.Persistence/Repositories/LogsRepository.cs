@@ -13,11 +13,9 @@ namespace Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public Task Create(Log entity)
+        public void Create(Log entity)
         {
-            _dbContext.ChangeTracker.Clear();
             _dbContext.Logs.Add(entity);       
-            return _dbContext.SaveChangesAsync();        
         }
     }
 }

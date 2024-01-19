@@ -1,7 +1,10 @@
-﻿using Application.Resourses.Commands.Specializations.ChangeStatus;
+﻿using Application.DTOs.Specializations;
+using Application.Resourses.Commands.Specializations.ChangeStatus;
 using Application.Resourses.Commands.Specializations.Create;
 using Application.Resourses.Commands.Specializations.Update;
+using Application.Resourses.Queries.Specializations;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +40,17 @@ namespace InnoClinic.AppointmentsApi.Controllers
         {
             var specialization = await _mediator.Send(command);
             return Ok(specialization);
+        }
+
+        [HttpGet("specializations")]
+        public async Task<List<SpecializationDto>> GetSpecializationsAsync([FromQuery] SpecializationParameters specializationParameters)
+        {
+            var specializations = await _mediator.Send(new GetSpecializationsQuery
+            {
+                SpecializationParameters = specializationParameters
+            });
+
+            return specializations;
         }
     }
 }

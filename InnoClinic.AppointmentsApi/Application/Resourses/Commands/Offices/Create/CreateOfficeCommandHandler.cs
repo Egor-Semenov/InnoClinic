@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Offices.Create
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<OfficeDto> Handle(CreateOfficeCommand request, CancellationToken cancellationToken)

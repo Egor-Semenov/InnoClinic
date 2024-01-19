@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Offices.Update
         {
             _officesRepository = officesRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateOfficeDto> Handle(UpdateOfficeCommand request, CancellationToken cancellationToken)
