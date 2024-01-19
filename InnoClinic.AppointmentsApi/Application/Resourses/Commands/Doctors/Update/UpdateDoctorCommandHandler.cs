@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Doctors.Update
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateDoctorDto> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)

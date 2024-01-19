@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Appointments.Create
         {
             _appointmentsRepository = appointmentsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<AppointmentDto> Handle(CreateAppointmentCommand request, CancellationToken cancellationToken)
