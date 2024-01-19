@@ -1,7 +1,10 @@
 using Application.Mappers;
+using HealthChecks.UI.Client;
 using InnoClinic.AppointmentsApi.Extentions;
 using InnoClinic.AppointmentsApi.Middleware;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Reflection;
 
 namespace InnoClinic.AppointmentsApi
@@ -19,11 +22,39 @@ namespace InnoClinic.AppointmentsApi
             builder.Services.ConfigureCommandsAndQueriesHandlers();
             builder.Services.ConfigureValidators();
             builder.Services.ConfigureHostedServices();
+            builder.Services.ConfigureSwagger();
+
+            builder.Services.ConfigureQuartz();
 
             builder.Services.AddControllers();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddHealthChecks()
+                .AddSqlServer(builder.Configuration.GetConnectionString("sqlConnection")!);
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
+            });
+
+            builder.Services.AddAuthentication(config =>
+            {
+                config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer("Bearer", opt =>
+                {
+                    opt.Authority = "https://localhost:7104";
+                    opt.Audience = "InnoClinicWebApi";
+                    opt.RequireHttpsMetadata = false;
+                });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -40,8 +71,13 @@ namespace InnoClinic.AppointmentsApi
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.MapHealthChecks("/_health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 

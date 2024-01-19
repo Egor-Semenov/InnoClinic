@@ -6,6 +6,7 @@ using Application.Resourses.Commands.Patients.Create;
 using Application.Resourses.Commands.Receptionists.Create;
 using AutoMapper;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
 
 namespace Application.Mappers
 {

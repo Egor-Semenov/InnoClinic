@@ -8,6 +8,7 @@ namespace Domain.Models.Entities
         public int StatusId { get; set; }
 
         public SpecializationStatus Status { get; set; }
+        public ICollection<Service> Services { get; set; }
         public ICollection<Doctor> Doctors { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
     }
