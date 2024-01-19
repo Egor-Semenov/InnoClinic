@@ -1,50 +1,30 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
+using Domain.RequestFeatures.Extensions;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public sealed class ServicesRepository : IBaseRepository<Service>
+    public sealed class ServicesRepository : BaseRepository<Service>, IServiceRepository
     {
-        private readonly ApplicationDbContext _dbContext;
+        public ServicesRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-        public ServicesRepository(ApplicationDbContext dbContext)
+        public async Task<List<Service>> GetServicesAsync(ServiceParameters serviceParameters, bool isTrackChanges)
         {
-            _dbContext = dbContext;
-        }
+            var serviceEntities = !isTrackChanges ?
+                DbContext.Set<Service>().AsNoTracking() :
+                DbContext.Set<Service>();
 
-        public Task Create(Service entity)
-        {
-            _dbContext.Set<Service>().Add(entity);
-            return _dbContext.SaveChangesAsync();
-        }
+            var services = await serviceEntities
+                .FilterByServiceStatus(serviceParameters.ServiceStatus)
+                .FilterBySpecialization(serviceParameters.SpecializationId)
+                .FilterByServiceCategory(serviceParameters.ServiceCategory)
+                .Search(serviceParameters.SearchTerm)
+                .ToListAsync();
 
-        public Task Delete(Service entity)
-        {
-            _dbContext.Set<Service>().Remove(entity);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        public IQueryable<Service> FindAll(bool isTrackChanges) =>
-            !isTrackChanges ?
-        _dbContext.Set<Service>()
-                .AsNoTracking() :
-            _dbContext.Set<Service>();
-
-        public IQueryable<Service> FindByCondition(Expression<Func<Service, bool>> expression, bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Service>()
-        .Where(expression)
-                .AsNoTracking() :
-            _dbContext.Set<Service>()
-            .Where(expression);
-
-        public Task Update(Service entity)
-        {
-            _dbContext.Set<Service>().Update(entity);
-            return _dbContext.SaveChangesAsync();
+            return services;
         }
     }
 }

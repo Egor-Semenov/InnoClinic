@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Appointments;
-using Domain.Models.Entities;
 using MediatR;
 
 namespace Application.Resourses.Commands.Appointments.Create
@@ -13,6 +12,6 @@ namespace Application.Resourses.Commands.Appointments.Create
         public int OfficeId { get; set; }
         public DateTime Date { get; set; }
         public DateTime Time { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

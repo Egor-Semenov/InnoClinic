@@ -4,30 +4,42 @@ using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
 using Domain.Models.Enums;
-using Infrastructure.Persistence.Repositories;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Resourses.Commands.Services.Create
 {
     public sealed class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, ServiceDto>
     {
         private readonly IBaseRepository<Service> _serviceRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateServiceCommand> _validator;
 
-        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper)
+        public CreateServiceCommandHandler(IBaseRepository<Service> serviceRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<CreateServiceCommand> validator)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ServiceDto> Handle(CreateServiceCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             if (await CheckServiceAlreadyExists(request.ServiceName))
             {
                 throw new BadRequestException($"{request.ServiceName} service exists in the system already.");
@@ -41,7 +53,9 @@ namespace Application.Resourses.Commands.Services.Create
                 StatusId = (int)ServiceStatuses.Active
             };
 
-            await _serviceRepository.Create(service);
+            _serviceRepository.Create(service);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<ServiceDto>(service);
         }
 

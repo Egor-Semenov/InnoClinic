@@ -1,50 +1,28 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
+using Domain.RequestFeatures.Extensions;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public sealed class SpecializationsRepository : IBaseRepository<Specialization>
+    public sealed class SpecializationsRepository : BaseRepository<Specialization>, ISpecializationRepository
     {
-        private readonly ApplicationDbContext _dbContext;
+        public SpecializationsRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-        public SpecializationsRepository(ApplicationDbContext dbContext)
+        public async Task<List<Specialization>> GetSpecializationsAsync(SpecializationParameters specializationParameters, bool isTrackChanges)
         {
-            _dbContext = dbContext;
-        }
+            var specializationEntities = !isTrackChanges ?
+                DbContext.Set<Specialization>().AsNoTracking() :
+                DbContext.Set<Specialization>();
 
-        public Task Create(Specialization entity)
-        {
-            _dbContext.Set<Specialization>().Add(entity);
-            return _dbContext.SaveChangesAsync();
-        }
+            var specializations = await specializationEntities
+                .FilterBySpecializationStatus(specializationParameters.SpecializationStatus)
+                .Search(specializationParameters.SearchTerm)
+                .ToListAsync();
 
-        public Task Delete(Specialization entity)
-        {
-            _dbContext.Set<Specialization>().Remove(entity);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        public IQueryable<Specialization> FindAll(bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Specialization>()
-                .AsNoTracking() :
-            _dbContext.Set<Specialization>();
-
-        public IQueryable<Specialization> FindByCondition(Expression<Func<Specialization, bool>> expression, bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Specialization>()
-                .Where(expression)
-                .AsNoTracking() :
-            _dbContext.Set<Specialization>()
-            .Where(expression);
-
-        public Task Update(Specialization entity)
-        {
-            _dbContext.Set<Specialization>().Update(entity);
-            return _dbContext.SaveChangesAsync();
+            return specializations;
         }
     }
 }

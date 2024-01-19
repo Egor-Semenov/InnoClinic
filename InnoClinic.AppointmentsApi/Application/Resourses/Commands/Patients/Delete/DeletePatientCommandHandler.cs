@@ -11,12 +11,14 @@ namespace Application.Resourses.Commands.Patients.Delete
     public sealed class DeletePatientCommandHandler : IRequestHandler<DeletePatientCommand, DeletePatientDto>
     {
         private readonly IBaseRepository<Patient> _patientsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DeletePatientCommandHandler(IBaseRepository<Patient> patientsRepository, IMapper mapper)
+        public DeletePatientCommandHandler(IBaseRepository<Patient> patientsRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _patientsRepository = patientsRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<DeletePatientDto> Handle(DeletePatientCommand request, CancellationToken cancellationToken)
@@ -27,7 +29,9 @@ namespace Application.Resourses.Commands.Patients.Delete
                 throw new NotFoundException($"Patient with id: {request.Id} is not found.");
             }
 
-            await _patientsRepository.Delete(patient);
+            _patientsRepository.Delete(patient);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<DeletePatientDto>(patient);
         }
     }

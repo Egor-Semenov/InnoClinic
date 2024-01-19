@@ -1,14 +1,16 @@
 ﻿using Application.Resourses.Commands.Appointments.Approve;
+using Application.Services;
+using Application.Services.Interfaces;
+using Application.Validators;
 using Domain.Interfaces.Repositories;
-using Domain.Models.Entities;
+using FluentValidation;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Repositories;
+using InnoClinic.BackgroundJobs.Jobs;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyModel;
-using Scrutor;
-using System.Reflection;
+using Microsoft.OpenApi.Models;
+using Quartz;
 
 namespace InnoClinic.AppointmentsApi.Extentions
 {
@@ -19,6 +21,37 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 opts.UseSqlServer(configuration.GetConnectionString("sqlConnection"), b =>
                     b.MigrationsAssembly("Infrastructure.Persistence")));
 
+        public static void ConfigureSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(s =>
+            {
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Place to add JWT with Bearer",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Name = "Bearer",
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+        }
+
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.Scan(scan => scan
@@ -26,6 +59,9 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .AddClasses(classes => classes.AssignableTo(typeof(IBaseRepository<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+            services.AddScoped<ILogRepository, LogsRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         public static void ConfigureCommandsAndQueriesHandlers(this IServiceCollection services)
@@ -35,6 +71,34 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+            services.AddScoped<ILoggerDbService, LoggerDbService>();
+        }
+
+        public static void ConfigureValidators(this IServiceCollection services)
+        {
+            services.Scan(scan => scan
+            .FromAssembliesOf(typeof(DoctorCreationValidator))
+            .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+        }
+
+        public static void ConfigureQuartz(this IServiceCollection services)
+        {
+            services.AddQuartz(opt =>
+            {
+                var jobKey = "DeleteJob";
+                opt.AddJob<DeleteJob>(opt => opt.WithIdentity(jobKey));
+                opt.AddTrigger(opt =>
+                {
+                    opt.ForJob(jobKey)
+                    .WithIdentity("DeleteJobTrigger")
+                    .WithCronSchedule(CronScheduleBuilder.CronSchedule("0/5 * * ? * *"));
+                });
+            });
+
+            services.AddQuartzHostedService(config => config.WaitForJobsToComplete = true);
         }
     }
 }

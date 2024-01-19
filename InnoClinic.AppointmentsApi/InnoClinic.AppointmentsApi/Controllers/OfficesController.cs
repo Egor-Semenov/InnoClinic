@@ -1,7 +1,8 @@
 ﻿using Application.DTOs.Offices;
 using Application.Resourses.Commands.Offices.Create;
+using Application.Resourses.Queries.Offices;
+using Domain.RequestFeatures;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinic.AppointmentsApi.Controllers
@@ -22,6 +23,17 @@ namespace InnoClinic.AppointmentsApi.Controllers
         {
             var office = await _mediator.Send(command);
             return Ok(office);
-        } 
+        }
+
+        [HttpGet("offices")]
+        public async Task<List<OfficeDto>> GetOfficesAsync([FromQuery] OfficeParameters officeParameters)
+        {
+            var offices = await _mediator.Send(new GetOfficesQuery
+            {
+                OfficeParameters = officeParameters
+            });
+
+            return offices;
+        }
     }
 }

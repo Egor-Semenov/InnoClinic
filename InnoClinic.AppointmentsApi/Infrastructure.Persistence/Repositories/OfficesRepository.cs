@@ -1,55 +1,28 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
+using Domain.RequestFeatures.Extensions;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public sealed class OfficesRepository : IBaseRepository<Office>
+    public sealed class OfficesRepository : BaseRepository<Office>, IOfficeRepository
     {
-        private readonly ApplicationDbContext _dbContext;
+        public OfficesRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-        public OfficesRepository(ApplicationDbContext dbContext)
+        public async Task<List<Office>> GetOfficesAsync(OfficeParameters officeParameters, bool isTrackChanges)
         {
-            _dbContext = dbContext;
-        }
+            var officeEntities = !isTrackChanges ?
+                DbContext.Set<Office>().AsNoTracking() :
+                DbContext.Set<Office>();
 
-        public Task Create(Office entity)
-        {
-            _dbContext.Set<Office>().Add(entity);
-            return _dbContext.SaveChangesAsync();
-        }
+            var offices = await officeEntities
+                .FilterByOfficeStatus(officeParameters.OfficeStatus)
+                .Search(officeParameters.SearchTerm)
+                .ToListAsync();
 
-        public Task Delete(Office entity)
-        {
-            _dbContext.Set<Office>().Remove(entity);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        public IQueryable<Office> FindAll(bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Office>()
-                .AsNoTracking() :
-            _dbContext.Set<Office>();
-
-        public IQueryable<Office> FindByCondition(Expression<Func<Office, bool>> expression, bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Office>()
-                .Where(expression)
-                .AsNoTracking() :
-            _dbContext.Set<Office>()
-            .Where(expression);
-
-        public Task Update(Office entity)
-        {
-            _dbContext.Set<Office>().Update(entity);
-            return _dbContext.SaveChangesAsync();
+            return offices;
         }
     }
 }

@@ -9,10 +9,12 @@ namespace Application.Resourses.Commands.Appointments.Delete
     public sealed class DeleteAppointmentCommandHandler : IRequestHandler<DeleteAppointmentCommand, Appointment>
     {
         private readonly IBaseRepository<Appointment> _appointmentsRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteAppointmentCommandHandler(IBaseRepository<Appointment> appointmentsRepository)
+        public DeleteAppointmentCommandHandler(IBaseRepository<Appointment> appointmentsRepository, IUnitOfWork unitOfWork)
         {
             _appointmentsRepository = appointmentsRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Appointment> Handle(DeleteAppointmentCommand request, CancellationToken cancellationToken)
@@ -24,7 +26,9 @@ namespace Application.Resourses.Commands.Appointments.Delete
                 throw new NotFoundException($"Appointment with id: {request.Id} is not found.");
             }
 
-            await _appointmentsRepository.Delete(appointment!);
+            _appointmentsRepository.Delete(appointment!);
+            await _unitOfWork.SaveChangesAsync();
+
             return appointment!;
         }
     }

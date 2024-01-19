@@ -3,24 +3,42 @@ using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Application.Resourses.Commands.Doctors.Update
 {
     public sealed class UpdateDoctorCommandHandler : IRequestHandler<UpdateDoctorCommand, UpdateDoctorDto>
     {
         private readonly IBaseRepository<Doctor> _doctorsRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<UpdateDoctorCommand> _validator;
 
-        public UpdateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper)
+        public UpdateDoctorCommandHandler(IBaseRepository<Doctor> doctorsRepository, IMapper mapper, IUnitOfWork unitOfWork, IValidator<UpdateDoctorCommand> validator)
         {
             _doctorsRepository = doctorsRepository;
             _mapper = mapper;
+            _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateDoctorDto> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
         {
+            var validationResult = _validator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationResult.Errors)
+                {
+                    stringBuilder.AppendLine(error.ErrorMessage);
+                }
+
+                throw new BadRequestException(stringBuilder.ToString());
+            }
+
             var doctor = await _doctorsRepository.FindByCondition(x => x.Email == request.Email, false).FirstOrDefaultAsync();
 
             if (doctor is null)
@@ -38,7 +56,9 @@ namespace Application.Resourses.Commands.Doctors.Update
             doctor.PhotoFilePath = request.PhotoFilePath;
             doctor.StatusId = (int)request.Status;
 
-            await _doctorsRepository.Update(doctor);
+            _doctorsRepository.Update(doctor);
+            await _unitOfWork.SaveChangesAsync();
+
             return _mapper.Map<UpdateDoctorDto>(doctor);
         }
     }

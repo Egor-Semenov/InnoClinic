@@ -1,50 +1,37 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using Domain.RequestFeatures;
+using Domain.RequestFeatures.Extensions;
 using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public sealed class DoctorsRepository : IBaseRepository<Doctor>
+    public sealed class DoctorsRepository : BaseRepository<Doctor>, IDoctorRepository
     {
-        private readonly ApplicationDbContext _dbContext;
+        public DoctorsRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-        public DoctorsRepository(ApplicationDbContext dbContext)
+        public Task<Doctor> GetDoctorById(int id, bool isTrackChanges) => isTrackChanges ?
+            DbContext.Set<Doctor>().Where(x => x.Id == id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync() :
+            DbContext.Set<Doctor>().Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+
+        public async Task<PagedList<Doctor>> GetDoctorsAsync(DoctorParameters doctorParameters, bool isTrackChanges)
         {
-            _dbContext = dbContext;
-        }
+            var doctorEntities = !isTrackChanges ?
+                DbContext.Set<Doctor>().Include(x => x.Appointments).AsNoTracking() :
+                DbContext.Set<Doctor>().Include(x => x.Appointments);
 
-        public Task Create(Doctor entity)
-        {
-            _dbContext.Set<Doctor>().Add(entity);
-            return _dbContext.SaveChangesAsync();
-        }
+            var doctors = await doctorEntities
+                .FilterByDoctorStatus(doctorParameters.DoctorStatus)
+                .FilterBySpecializationType(doctorParameters.SpecializationType)
+                .FilterByOffice(doctorParameters.OfficeId)
+                .Search(doctorParameters.SearchTerm)
+                .ToListAsync();
 
-        public Task Delete(Doctor entity)
-        {
-            _dbContext.Set<Doctor>().Remove(entity);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        public IQueryable<Doctor> FindAll(bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Doctor>()
-                .AsNoTracking() :
-            _dbContext.Set<Doctor>();
-
-        public IQueryable<Doctor> FindByCondition(Expression<Func<Doctor, bool>> expression, bool isTrackChanges) =>
-            !isTrackChanges ?
-                _dbContext.Set<Doctor>()
-                .Where(expression)
-                .AsNoTracking() :
-            _dbContext.Set<Doctor>()
-            .Where(expression);
-
-        public Task Update(Doctor entity)
-        {
-            _dbContext.Set<Doctor>().Update(entity);
-            return _dbContext.SaveChangesAsync();
+            return PagedList<Doctor>.ToPagedList(doctors, doctorParameters.PageNumber, doctorParameters.PageSize);
         }
     }
 }
