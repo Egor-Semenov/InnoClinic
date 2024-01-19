@@ -21,8 +21,8 @@ namespace Application.Resourses.Commands.Specializations.Update
         {
             _specializationsRepository = specializationsRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UpdateSpecializationDto> Handle(UpdateSpecializationCommand request, CancellationToken cancellationToken)

@@ -22,8 +22,8 @@ namespace Application.Resourses.Commands.Services.Create
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ServiceDto> Handle(CreateServiceCommand request, CancellationToken cancellationToken)

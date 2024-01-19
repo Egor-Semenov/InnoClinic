@@ -20,8 +20,8 @@ namespace Application.Resourses.Commands.Receptionists.Create
         {
             _receptionistRepository = receptionistRepository;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _validator = validator;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ReceptionistDto> Handle(CreateReceptionistCommand request, CancellationToken cancellationToken)
