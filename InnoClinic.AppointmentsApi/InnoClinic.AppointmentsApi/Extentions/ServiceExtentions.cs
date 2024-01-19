@@ -1,4 +1,7 @@
-﻿using Application.Resourses.Commands.Appointments.Approve;
+﻿using Application.RabbitMQ.Interfaces;
+using Application.RabbitMQ.Producers;
+using Application.RabbitMQ.Subscribers;
+using Application.Resourses.Commands.Appointments.Approve;
 using Application.Services;
 using Application.Services.Interfaces;
 using Application.Validators;
@@ -39,6 +42,7 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .WithScopedLifetime());
 
             services.AddScoped<ILoggerDbService, LoggerDbService>();
+            services.AddScoped<IMessageProducer, UserProfilesProducer>();
         }
 
         public static void ConfigureValidators(this IServiceCollection services)
@@ -48,6 +52,11 @@ namespace InnoClinic.AppointmentsApi.Extentions
             .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+        }
+
+        public static void ConfigureHostedServices(this IServiceCollection services)
+        {
+            services.AddHostedService<PatientCreatedSubscriber>();
         }
     }
 }

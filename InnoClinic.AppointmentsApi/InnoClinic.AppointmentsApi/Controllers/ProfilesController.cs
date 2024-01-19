@@ -1,4 +1,7 @@
-﻿using Application.Resourses.Commands.Doctors.ChangeStatus;
+﻿using Application.DTOs.Patients;
+using Application.RabbitMQ.Interfaces;
+using Application.RabbitMQ.Models;
+using Application.Resourses.Commands.Doctors.ChangeStatus;
 using Application.Resourses.Commands.Doctors.Create;
 using Application.Resourses.Commands.Doctors.Update;
 using Application.Resourses.Commands.Patients.Create;
@@ -18,16 +21,27 @@ namespace InnoClinic.AppointmentsApi.Controllers
     public class ProfilesController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IMessageProducer _messageProducer;
 
-        public ProfilesController(IMediator mediator)
+        public ProfilesController(IMediator mediator, IMessageProducer messageProducer)
         {
             _mediator = mediator;
+            _messageProducer = messageProducer;
         }
 
         [HttpPost("create-doctor")]
         public async Task<IActionResult> CreateDoctorProfileAsync([FromBody] CreateDoctorCommand command)
         {
             await _mediator.Send(command);
+
+            var message = new UserCreatedModel
+            {
+                Username = command.Username,
+                Password = command.Password,
+                Role = "Doctor"
+            };
+            _messageProducer.SendMessage(message);
+
             return Ok(command);
         }
 
@@ -46,9 +60,27 @@ namespace InnoClinic.AppointmentsApi.Controllers
         }
 
         [HttpPost("create-patient")]
-        public async Task<IActionResult> CreatePatientProfileAsync([FromBody] CreatePatientCommand command)
+        public async Task<IActionResult> CreatePatientProfileAsync([FromBody] CreatePatientDto command)
         {
-            var patient = await _mediator.Send(command);
+            var patient = await _mediator.Send(new CreatePatientCommand
+            {
+                Username = command.Username,
+                FirstName = command.FirstName,
+                LastName = command.LastName,
+                MiddleName = command.MiddleName,
+                PhoneNumber = command.PhoneNumber,
+                BirthDate = command.BirthDate,
+                PhotoFilePath = command.PhotoFilePath,
+            });
+
+            var message = new UserCreatedModel
+            {
+                Username = command.Username,
+                Password = command.Password,
+                Role = "Patient"
+            };
+            _messageProducer.SendMessage(message);
+
             return Ok(patient);
         }
 
@@ -69,7 +101,16 @@ namespace InnoClinic.AppointmentsApi.Controllers
         [HttpPost("create-receptionist")]
         public async Task<IActionResult> CreateReceptionistProfileAsync([FromBody] CreateReceptionistCommand command)
         {
-            var receptionist = await _mediator.Send(command);           
+            var receptionist = await _mediator.Send(command);
+
+            var message = new UserCreatedModel
+            {
+                Username = command.Username,
+                Password = command.Password,
+                Role = "Receptionist"
+            };
+            _messageProducer.SendMessage(message);
+
             return Ok(receptionist);
         }
 
