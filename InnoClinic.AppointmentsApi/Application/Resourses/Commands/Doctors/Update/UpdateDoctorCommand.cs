@@ -4,8 +4,9 @@ using MediatR;
 
 namespace Application.Resourses.Commands.Doctors.Update
 {
-    public sealed class UpdateDoctorCommand : IRequest<UpdateDoctorDto>
+    public sealed class UpdateDoctorCommand : IRequest<DoctorDto>
     {
+        public int DoctorId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string? MiddleName { get; set; }
@@ -14,7 +15,6 @@ namespace Application.Resourses.Commands.Doctors.Update
         public int SpecializationId { get; set; }
         public int OfficeId { get; set; }
         public DateTime CareerStartYear { get; set; }
-        public DoctorsStatuses Status { get; set; }
         public string? PhotoFilePath { get; set; }
     }
 }

@@ -1,11 +1,11 @@
-﻿using Application.DTOs.Doctors;
-using Domain.Models.Enums;
-using MediatR;
+﻿using Domain.Models.Enums;
 
-namespace Application.Resourses.Commands.Doctors.Create
+namespace Application.DTOs.Doctors
 {
-    public sealed class CreateDoctorCommand : IRequest<DoctorDto>
+    public sealed class CreateDoctorDto
     {
+        public string Username { get; set; }
+        public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string? MiddleName { get; set; }
@@ -13,7 +13,7 @@ namespace Application.Resourses.Commands.Doctors.Create
         public string Email { get; set; }
         public int SpecializationId { get; set; }
         public int OfficeId { get; set; }
-        public DateTime CareerStartYear { get; set; }
+        public DateTime CareerStartDate { get; set; }
         public string? PhotoFilePath { get; set; }
     }
 }

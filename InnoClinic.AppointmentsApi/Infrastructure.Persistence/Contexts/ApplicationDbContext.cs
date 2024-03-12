@@ -57,6 +57,27 @@ namespace Infrastructure.Persistence.Contexts
                 .WithOne(x => x.Patient)
                 .HasForeignKey(x => x.PatientId);
 
+            modelBuilder.Entity<Patient>()
+                .HasAlternateKey(x => x.UserId);
+
+            modelBuilder.Entity<Doctor>()
+                .HasAlternateKey(x => x.UserId);
+
+            modelBuilder.Entity<Receptionist>()
+                .HasAlternateKey(x => x.UserId);
+
+            modelBuilder.Entity<Patient>()
+                .Property(x => x.UserId)
+                .HasDefaultValueSql("NEWID()");
+
+            modelBuilder.Entity<Doctor>()
+                .Property(x => x.UserId)
+                .HasDefaultValueSql("NEWID()");
+
+            modelBuilder.Entity<Receptionist>()
+                .Property(x => x.UserId)
+                .HasDefaultValueSql("NEWID()");
+
             modelBuilder.Entity<Specialization>()
                 .HasMany(x => x.Appointments)
                 .WithOne(x => x.Specialization)

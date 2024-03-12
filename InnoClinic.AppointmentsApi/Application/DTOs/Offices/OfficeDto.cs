@@ -4,6 +4,7 @@ namespace Application.DTOs.Offices
 {
     public sealed class OfficeDto
     {
+        public int OfficeId { get; set; }
         public string OfficeAddress { get; set; }
         public string PhoneNumber { get; set; }
         public OfficeStatuses Status { get; set; }

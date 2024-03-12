@@ -1,4 +1,7 @@
-﻿using Application.Resourses.Commands.Appointments.Approve;
+﻿using Application.RabbitMQ.Interfaces;
+using Application.RabbitMQ.Producers;
+using Application.RabbitMQ.Subscribers;
+using Application.Resourses.Commands.Appointments.Approve;
 using Application.Services;
 using Application.Services.Interfaces;
 using Application.Validators;
@@ -73,6 +76,7 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .WithScopedLifetime());
 
             services.AddScoped<ILoggerDbService, LoggerDbService>();
+            services.AddScoped<IUserProfilesMessageProducer, UserProfilesProducer>();
         }
 
         public static void ConfigureValidators(this IServiceCollection services)
@@ -94,11 +98,17 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 {
                     opt.ForJob(jobKey)
                     .WithIdentity("DeleteJobTrigger")
-                    .WithCronSchedule(CronScheduleBuilder.CronSchedule("0/5 * * ? * *"));
+                    .WithCronSchedule(CronScheduleBuilder.DailyAtHourAndMinute(12, 0));
                 });
             });
 
             services.AddQuartzHostedService(config => config.WaitForJobsToComplete = true);
+        }
+
+        public static void ConfigureHostedServices(this IServiceCollection services)
+        {
+            services.AddHostedService<PatientCreatedSubscriber>();
+            services.AddHostedService<DeadLettersSubscriber>();
         }
     }
 }

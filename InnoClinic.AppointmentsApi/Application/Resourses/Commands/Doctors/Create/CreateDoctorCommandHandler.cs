@@ -3,6 +3,7 @@ using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Models.Entities;
+using Domain.Models.Enums;
 using FluentValidation;
 using MediatR;
 using System.Text;
@@ -48,7 +49,7 @@ namespace Application.Resourses.Commands.Doctors.Create
                 SpecializationId = request.SpecializationId,
                 OfficeId = request.OfficeId,
                 CareerStartYear = request.CareerStartYear,
-                StatusId = (int)request.Status,
+                StatusId = (int)DoctorsStatuses.AtWork,
                 PhotoFilePath = request.PhotoFilePath
             };
 

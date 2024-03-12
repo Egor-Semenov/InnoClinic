@@ -21,16 +21,16 @@ namespace InnoClinic.BackgroundJobs.Jobs
         {
             await ExecuteDeleteJob("Patients");
             await ExecuteDeleteJob("Receptionists");
-            await ExecuteDeleteJob("Appointmnets");
+            await ExecuteDeleteJob("Appointments");
         }
 
         private async Task ExecuteDeleteJob(string tableName)
         {
-            var connection = new SqlConnection(_configuration.GetConnectionString("sqlConnection"));
+            using var connection = new SqlConnection(_configuration.GetConnectionString("sqlConnection"));
             await connection.OpenAsync();
 
             var deleteCommand = $"DELETE FROM {tableName} WHERE IsDeleted = 1 AND DATEDIFF(MINUTE, DeletedAt, GETDATE()) >= 5";
-            var command = new SqlCommand(deleteCommand, connection);
+            using var command = new SqlCommand(deleteCommand, connection);
 
             try
             {

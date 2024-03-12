@@ -4,6 +4,7 @@ namespace Application.DTOs.Services
 {
     public sealed class ServiceDto
     {
+        public int ServiceId { get; set; }
         public string ServiceName { get; set; }
         public double Price { get; set; }
         public int Specialization { get; set; }

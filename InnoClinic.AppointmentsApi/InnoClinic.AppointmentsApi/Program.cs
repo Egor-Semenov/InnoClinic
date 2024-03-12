@@ -21,6 +21,7 @@ namespace InnoClinic.AppointmentsApi
             builder.Services.ConfigureRepositories();
             builder.Services.ConfigureCommandsAndQueriesHandlers();
             builder.Services.ConfigureValidators();
+            builder.Services.ConfigureHostedServices();
             builder.Services.ConfigureSwagger();
 
             builder.Services.ConfigureQuartz();
@@ -28,18 +29,20 @@ namespace InnoClinic.AppointmentsApi
             builder.Services.AddControllers();
             builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             builder.Services.AddHealthChecks()
-                .AddSqlServer(builder.Configuration.GetConnectionString("sqlConnection")!);
+                .AddSqlServer(builder.Configuration.GetConnectionString("sqlConnection")!)
+                .AddRabbitMQ(rabbitConnectionString: builder.Configuration.GetConnectionString("rabbitmqConnection")!);
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
+                options.AddPolicy("CorsPolicy",
                     builder =>
                     {
                         builder
                         .AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .WithExposedHeaders("X-Pagination");
                     });
             });
 
@@ -67,7 +70,7 @@ namespace InnoClinic.AppointmentsApi
             }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-
+            app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
 
             app.MapHealthChecks("/_health", new HealthCheckOptions
