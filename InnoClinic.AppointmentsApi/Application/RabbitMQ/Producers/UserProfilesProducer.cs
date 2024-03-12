@@ -1,11 +1,13 @@
 ﻿using Application.RabbitMQ.Interfaces;
+using Application.RabbitMQ.Models.Send;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
+using System.Threading.Channels;
 
 namespace Application.RabbitMQ.Producers
 {
-    public sealed class UserProfilesProducer : IMessageProducer
+    public sealed class UserProfilesProducer : IUserProfilesMessageProducer
     {
         private readonly ConnectionFactory _factory;
         private readonly IConnection _connection;
@@ -16,14 +18,25 @@ namespace Application.RabbitMQ.Producers
             _factory = new ConnectionFactory { HostName = "localhost" };
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
+            _channel.ConfirmSelect();
         }
 
-        public void SendMessage<T>(T message)
+        public void SendMessage(UserCreatedModel message)
         {
             var payload = JsonConvert.SerializeObject(message);
             var byteArray = Encoding.UTF8.GetBytes(payload);
 
-            _channel.BasicPublish("create-user", "user-created", null, byteArray);
+            _channel.BasicPublish("user-profiles", "user-created", null, byteArray);
+
+            _channel.WaitForConfirmsOrDie(timeout: TimeSpan.FromSeconds(10));
+        }
+
+        public void SendMessage(UserDeletedModel message)
+        {
+            var payload = JsonConvert.SerializeObject(message);
+            var byteArray = Encoding.UTF8.GetBytes(payload);
+
+            _channel.BasicPublish("user-profiles", "user-deleted", null, byteArray);
         }
     }
 }

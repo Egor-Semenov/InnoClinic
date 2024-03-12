@@ -1,9 +1,11 @@
-﻿using Domain.Models.Enums;
+﻿using Application.DTOs.Appointments;
+using Domain.Models.Enums;
 
 namespace Application.DTOs.Doctors
 {
     public sealed class DoctorDto
     {
+        public Guid UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
@@ -14,5 +16,6 @@ namespace Application.DTOs.Doctors
         public string Expirience { get; set; }
         public DoctorsStatuses Status { get; set; }
         public string PhotoFilePath { get; set; }
+        public List<AppointmentDto> Appointments { get; set; }
     }
 }

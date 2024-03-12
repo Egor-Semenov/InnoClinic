@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Application.Resourses.Commands.Doctors.Update
 {
-    public sealed class UpdateDoctorCommandHandler : IRequestHandler<UpdateDoctorCommand, UpdateDoctorDto>
+    public sealed class UpdateDoctorCommandHandler : IRequestHandler<UpdateDoctorCommand, DoctorDto>
     {
         private readonly IBaseRepository<Doctor> _doctorsRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -25,7 +25,7 @@ namespace Application.Resourses.Commands.Doctors.Update
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<UpdateDoctorDto> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
+        public async Task<DoctorDto> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(request);
             if (!validationResult.IsValid)
@@ -39,7 +39,7 @@ namespace Application.Resourses.Commands.Doctors.Update
                 throw new BadRequestException(stringBuilder.ToString());
             }
 
-            var doctor = await _doctorsRepository.FindByCondition(x => x.Email == request.Email, false).FirstOrDefaultAsync();
+            var doctor = await _doctorsRepository.FindByCondition(x => x.Id == request.DoctorId, false).FirstOrDefaultAsync();
 
             if (doctor is null)
             {
@@ -54,12 +54,11 @@ namespace Application.Resourses.Commands.Doctors.Update
             doctor.OfficeId = request.OfficeId;
             doctor.SpecializationId = request.SpecializationId;
             doctor.PhotoFilePath = request.PhotoFilePath;
-            doctor.StatusId = (int)request.Status;
 
             _doctorsRepository.Update(doctor);
             await _unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<UpdateDoctorDto>(doctor);
+            return _mapper.Map<DoctorDto>(doctor);
         }
     }
 }

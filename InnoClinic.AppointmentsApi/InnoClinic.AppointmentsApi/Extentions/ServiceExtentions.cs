@@ -76,7 +76,7 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 .WithScopedLifetime());
 
             services.AddScoped<ILoggerDbService, LoggerDbService>();
-            services.AddScoped<IMessageProducer, UserProfilesProducer>();
+            services.AddScoped<IUserProfilesMessageProducer, UserProfilesProducer>();
         }
 
         public static void ConfigureValidators(this IServiceCollection services)
@@ -98,7 +98,7 @@ namespace InnoClinic.AppointmentsApi.Extentions
                 {
                     opt.ForJob(jobKey)
                     .WithIdentity("DeleteJobTrigger")
-                    .WithCronSchedule(CronScheduleBuilder.CronSchedule("0/5 * * ? * *"));
+                    .WithCronSchedule(CronScheduleBuilder.DailyAtHourAndMinute(12, 0));
                 });
             });
 
@@ -108,6 +108,7 @@ namespace InnoClinic.AppointmentsApi.Extentions
         public static void ConfigureHostedServices(this IServiceCollection services)
         {
             services.AddHostedService<PatientCreatedSubscriber>();
+            services.AddHostedService<DeadLettersSubscriber>();
         }
     }
 }

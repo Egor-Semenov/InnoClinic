@@ -14,14 +14,12 @@ namespace Application.Mappers
     {
         public UserProfilesMapper()
         {
-            CreateMap<CreateDoctorCommand, Doctor>()
-                .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.Status));
+            CreateMap<CreateDoctorCommand, Doctor>();
 
             CreateMap<Doctor, DoctorDto>()
                 .ForMember(dest => dest.Expirience, opt => opt.MapFrom(src => $"Expirience: {DateTime.Now.Year - src.CareerStartYear.Year + 1} years."));
 
-            CreateMap<Doctor, UpdateDoctorDto>()
-                .ForMember(dest => dest.Expirience, opt => opt.MapFrom(src => $"Expirience: {DateTime.Now.Year - src.CareerStartYear.Year + 1} years."));
+            CreateMap<Doctor, UpdateDoctorDto>();
 
             CreateMap<Doctor, ChangeDoctorStatusDto>();
 
